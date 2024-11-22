@@ -1,0 +1,72 @@
+.header{
+    /*+dark- #1167b1 #187bcd 	#2a9df4 */
+    background-color:#03254c;
+    color: white;             /* Color del texto blanco */
+    padding: 20px;            /* Espaciado interno */
+    text-align: center;
+}
+
+.footer {
+    background-color: #222;   /* Color de fondo negro oscuro */
+    color: white;             /* Color del texto blanco */
+    padding: 10px;            /* Espaciado interno */
+    text-align: center;       /* Centrar el texto */
+    position: fixed;          /* Fijar el footer al fondo */
+    bottom: 0;                /* Posición inferior */
+    width: 100%;              /* Ancho completo */
+  }
+
+
+/* Estilo para los botones */
+.primary-btn {
+    background-color: #1167b1;
+    /* Color de fondo */
+    color: white;
+    /* Color del texto */
+    padding: 10px 20px;
+    /* Espaciado interno */
+    margin: 7px;
+    /* Espaciado externo */
+    border: none;
+    /* Sin borde */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    font-size: 23px;
+    /* Tamaño de la fuente */
+    cursor: pointer;
+    /* Cambiar cursor al pasar el ratón */
+    transition: background-color 0.3s;
+    /* Transición suave al cambiar el color de fondo */
+}
+
+/* Efecto al pasar el ratón sobre los botones */
+.primary-btn:hover {
+    background-color: #187bcd;
+    /* Color de fondo al pasar el ratón */
+}
+
+/* Estilo para la caja de texto */
+.form-control {
+    width: 400px;
+    /* Ancho de la caja de texto */
+    padding: 10px;
+    /* Espaciado interno */
+    margin: 10px 0;
+    /* Espaciado externo */
+    border: 2px solid #4CAF50;
+    /* Color del borde */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    font-size: 16px;
+    /* Tamaño de la fuente */
+    transition: border-color 0.3s;
+    /* Transición suave al cambiar el color del borde */
+}
+
+/* Efecto al enfocar la caja de texto */
+.form-control:focus {
+    border-color: #45a049;
+    /* Color del borde al enfocar */
+    outline: none;
+    /* Eliminar el contorno por defecto */
+}

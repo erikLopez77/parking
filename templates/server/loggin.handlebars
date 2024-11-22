@@ -1,0 +1,28 @@
+{{#if failed }}
+<h4 class="bg-danger text-white p-2 text-center">
+    Authentication failed. Please try again.
+</h4>
+{{/if}}
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+    <form method="post" class="w-50">
+         <div class="mb-3">
+            <input
+                type="text"
+                placeholder="Usuario"
+                name="username"
+                class="form-control"
+                value="{{username}}"
+            />
+        </div>
+        <div class="mb-3">
+            <input
+                type="password"
+                placeholder="Contraseña"
+                name="password"
+                class="form-control"
+                value="{{password}}"
+            />
+        </div>
+        <button type="submit" class="primary-btn">Sign In</button>
+    </form>
+</div>
