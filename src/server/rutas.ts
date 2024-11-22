@@ -3,6 +3,7 @@ import { AuthStore } from "../server/auth/auth_types";
 import { OrmAuthStore } from "../server/auth/orm_authstore";
 import passport from "passport";
 import { configurePassport } from "../server/auth/passport_config";
+import { log } from "console";
 
 const jwt_secret = "mytokensecret";
 const store: AuthStore = new OrmAuthStore();
@@ -48,14 +49,25 @@ export const registerFormRoutes= (app:Express)=>{
         // Verifica que el usuario esté autenticado antes de mostrar la página
         if (req.isAuthenticated()) {
             res.render("menu", { user: req.user });
-        } else {
-            res.redirect("/loggin");
         }
     });
-
-    app.get("saveUser",(req, res) => {
-
-        res.render("saveUser"); // Renderiza la plantilla `loggin.handlebars`
+    app.get("/saveUser", (req, res) => {
+        res.render("saveUser");
+    });
+    app.post("/saveUser",async (req, res) =>  {
+        const {username, password}=req.body;
+        if (!username || !password) {
+            return res.status(400).render("saveUser", { error: "Todos los campos son obligatorios." });
+        }
+        try {
+            // Almacena el usuario en la base de datos usando `store`
+            const  model=await store.storeOrUpdateUser(username, password); // Método ficticio, ajusta según tu implementación
+            console.log(model.username);
+            res.redirect("/loggin"); // Redirige al login después del registro
+        } catch (error) {
+            console.error(error);
+            res.status(500).render("saveUser", { error: "Error al registrar usuario." });
+        }
       });
 
 

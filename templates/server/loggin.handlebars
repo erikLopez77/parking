@@ -11,7 +11,7 @@
 
 {{#if failed }}
 <h4 class="bg-danger text-white p-2 text-center">
-    Authentication failed. Please try again.
+    Autenticación fallida, revisa tu usuario o contraseña.
 </h4>
 {{/if}}
 <div class="container vh-100 d-flex justify-content-center align-items-center">
@@ -34,9 +34,12 @@
                 value="{{password}}"
             />
         </div>
-        <button type="submit" class="primary-btn">Iniciar sesion</button>
+        <button type="submit" class="primary-btn">Iniciar sesión</button>
     </form>
-     <button type="submit" class="primary-btn" formaction="../server/layouts/saveUser.handlebars" formmethod="get">Registrarse</button>
+    <form action="/saveUser">
+         <button type="submit" class="primary-btn" >Registrarse</button>
+    </form>
+
 </div>
 </body>
 </html>

@@ -35,12 +35,25 @@ const registerFormRoutes = (app) => {
         if (req.isAuthenticated()) {
             res.render("menu", { user: req.user });
         }
-        else {
-            res.redirect("/loggin");
-        }
     });
-    app.get("saveUser", (req, res) => {
-        res.render("saveUser"); // Renderiza la plantilla `loggin.handlebars`
+    app.get("/saveUser", (req, res) => {
+        res.render("saveUser");
+    });
+    app.post("/saveUser", async (req, res) => {
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).render("saveUser", { error: "Todos los campos son obligatorios." });
+        }
+        try {
+            // Almacena el usuario en la base de datos usando `store`
+            const model = await store.storeOrUpdateUser(username, password); // Método ficticio, ajusta según tu implementación
+            console.log(model.username);
+            res.redirect("/loggin"); // Redirige al login después del registro
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).render("saveUser", { error: "Error al registrar usuario." });
+        }
     });
 };
 exports.registerFormRoutes = registerFormRoutes;
