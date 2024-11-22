@@ -8,8 +8,17 @@
   <link rel="stylesheet" href="/bootstrap.min.css">
 </head>
 <body>
-  <header class="header">
-    <h1>Mi Aplicación</h1>
+  <!-- Barra de navegación -->
+  <header class="header bg-primary py-2">
+    <div class="container">
+      <nav class="navbar navbar-expand">
+        <ul class="navbar-nav d-flex flex-row">
+            <a class="nav-link text-white" href="/principal">Principal</a>
+            <a class="nav-link text-white" href="/lugares">Lugares</a>
+            <a class="nav-link text-white" href="/reservaciones">Mis Reservaciones</a>
+        </ul>
+      </nav>
+    </div>
   </header>
   <main>
     {{{body}}} <!-- Aquí se inserta el contenido de cada vista -->

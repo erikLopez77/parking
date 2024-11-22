@@ -39,6 +39,9 @@ const registerFormRoutes = (app) => {
             res.redirect("/loggin");
         }
     });
+    app.get("saveUser", (req, res) => {
+        res.render("saveUser"); // Renderiza la plantilla `loggin.handlebars`
+    });
 };
 exports.registerFormRoutes = registerFormRoutes;
 //acepta rol y devuelve un componente middleware que pasará soli al controlador

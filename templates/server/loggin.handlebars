@@ -1,3 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/bootstrap.min.css">
+</head>
+<body>
+
 {{#if failed }}
 <h4 class="bg-danger text-white p-2 text-center">
     Authentication failed. Please try again.
@@ -23,6 +34,9 @@
                 value="{{password}}"
             />
         </div>
-        <button type="submit" class="primary-btn">Sign In</button>
+        <button type="submit" class="primary-btn">Iniciar sesion</button>
     </form>
+     <button type="submit" class="primary-btn" formaction="../server/layouts/saveUser.handlebars" formmethod="get">Registrarse</button>
 </div>
+</body>
+</html>

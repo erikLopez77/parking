@@ -53,6 +53,11 @@ export const registerFormRoutes= (app:Express)=>{
         }
     });
 
+    app.get("saveUser",(req, res) => {
+
+        res.render("saveUser"); // Renderiza la plantilla `loggin.handlebars`
+      });
+
 
 }
 
