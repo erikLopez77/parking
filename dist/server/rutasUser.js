@@ -1,31 +1,18 @@
-import { Express, NextFunction, RequestHandler }from "express";
-import { AuthStore } from "../server/auth/auth_types";
-import { OrmAuthStore } from "../server/auth/orm_authstore";
-import passport from "passport";
-import { configurePassport } from "../server/auth/passport_config";
-import { log } from "console";
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.registerFormRoutesUser = void 0;
+const orm_authstore_1 = require("./auth/orm_authstore");
+const passport_1 = __importDefault(require("passport"));
+const passport_config_1 = require("./auth/passport_config");
 const jwt_secret = "mytokensecret";
-const store: AuthStore = new OrmAuthStore();
-//type User = { username: string }
-//propiedad de nombre
-declare module "express-session" {
-    interface SessionData { username: string; }
-}//propiedades de usuario
-declare global {
-    module Express {
-        // interface Request { user: User, authenticated: boolean }
-        interface Request { feathers?: any, authenticated: boolean }
-        interface User {
-            username: string
-        }
-    }
-}
-
-export const registerFormRoutes= (app:Express)=>{
-    configurePassport({ store, jwt_secret });
+const store = new orm_authstore_1.OrmAuthStore();
+const registerFormRoutesUser = (app) => {
+    (0, passport_config_1.configurePassport)({ store, jwt_secret });
     //autentica solicitudes, sesion es la fuente de datos de autenticacion
-    app.use(passport.authenticate("session"), (req, resp, next) => {
+    app.use(passport_1.default.authenticate("session"), (req, resp, next) => {
         resp.locals.user = req.user;
         resp.locals.authenticated
             = req.authenticated = req.user !== undefined;
@@ -34,17 +21,15 @@ export const registerFormRoutes= (app:Express)=>{
     app.get("/loggin", (req, res) => {
         const data = {
             failed: req.query["failed"] ? true : false,
-            signinpage: true//metodo de representación del formulario
-        }
-        res.render("loggin",data); // Renderiza la plantilla `loggin.handlebars`
-      });
-
-      // Ruta POST para manejar el formulario enviado
-      app.post("/loggin", passport.authenticate("local", {
-        failureRedirect: `/loggin?failed=1`,//caso fallido
-        successRedirect: "/menu"//caso de éxito
+            signinpage: true //metodo de representación del formulario
+        };
+        res.render("loggin", data); // Renderiza la plantilla `loggin.handlebars`
+    });
+    // Ruta POST para manejar el formulario enviado
+    app.post("/loggin", passport_1.default.authenticate("local", {
+        failureRedirect: `/loggin?failed=1`,
+        successRedirect: "/menu" //caso de éxito
     }));
-
     app.get("/menu", (req, res) => {
         // Verifica que el usuario esté autenticado antes de mostrar la página
         if (req.isAuthenticated()) {
@@ -54,25 +39,24 @@ export const registerFormRoutes= (app:Express)=>{
     app.get("/saveUser", (req, res) => {
         res.render("saveUser");
     });
-    app.post("/saveUser",async (req, res) =>  {
-        const {username, password}=req.body;
+    app.post("/saveUser", async (req, res) => {
+        const { username, password } = req.body;
         if (!username || !password) {
             return res.status(400).render("saveUser", { error: "Todos los campos son obligatorios." });
         }
         try {
             // Almacena el usuario en la base de datos usando `store`
-            const  model=await store.storeOrUpdateUser(username, password); // Método ficticio, ajusta según tu implementación
+            const model = await store.storeOrUpdateUser(username, password); // Método ficticio, ajusta según tu implementación
             console.log(model.username);
             res.redirect("/loggin"); // Redirige al login después del registro
-        } catch (error) {
+        }
+        catch (error) {
             console.error(error);
             res.status(500).render("saveUser", { error: "Error al registrar usuario." });
         }
-      });
-
-
-}
-
+    });
+};
+exports.registerFormRoutesUser = registerFormRoutesUser;
 //acepta rol y devuelve un componente middleware que pasará soli al controlador
 //si el usuario está asignado a ese rol (validateMembership) en autorizaciones
 /* export const roleGuard = (role: string)
@@ -91,4 +75,3 @@ export const registerFormRoutes= (app:Express)=>{
         }
     }
 } */
-

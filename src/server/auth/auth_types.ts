@@ -1,7 +1,8 @@
-export interface Credentials{
+export interface Credentials {
+
     username: string;
     hashedPassword: Buffer;
-    salt:Buffer
+    salt: Buffer
 }
 export interface Role {
     name: string;

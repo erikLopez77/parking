@@ -19,13 +19,14 @@ class OrmAuthStore {
         (0, orm_auth_models_1.initializeAuthModels)(this.sequelize);
         await this.sequelize.drop();
         await this.sequelize.sync();
+        await this.storeOrUpdateUser("ErikLopez", "mysecret");
         await this.storeOrUpdateUser("alice", "mysecret");
         await this.storeOrUpdateUser("bob", "mysecret");
         await this.storeOrUpdateRole({
             name: "Users", members: ["alice", "bob"]
         });
         await this.storeOrUpdateRole({
-            name: "Admins", members: ["alice"]
+            name: "Admins", members: ["ErikLopez"]
         });
     }
     async getUser(name) {

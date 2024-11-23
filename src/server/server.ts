@@ -1,9 +1,9 @@
 import { createServer } from "http";
-import express, {Express } from "express";
+import express, { Express } from "express";
 import httpProxy from "http-proxy";
 import helmet from "helmet";
 import { engine } from "express-handlebars";
-import {registerFormRoutes} from "./rutas";
+import { registerFormRoutesUser } from "./rutasUser";
 import passport from "passport";
 import session from "express-session";
 const port = 5000;
@@ -12,7 +12,7 @@ const proxy = httpProxy.createProxyServer({
     target: "http://localhost:5100", ws: true
 });
 
-expressApp.use(express.urlencoded({extended: true}));
+expressApp.use(express.urlencoded({ extended: true }));
 //express busca  archivos de plantilla en esa carpeta
 expressApp.set("views", "templates/server");
 //establece a Handlebars como motor de plantillas
@@ -30,7 +30,7 @@ expressApp.use(session({
     cookie: { secure: false, maxAge: 1000 * 60 * 60 }
 }));
 expressApp.use(passport.initialize());
-registerFormRoutes(expressApp);
+registerFormRoutesUser(expressApp);
 expressApp.use(express.static("static"));
 expressApp.use(express.static("node_modules/bootstrap/dist"));
 //use agrega middleware redirige req a la url de target, no Sockets

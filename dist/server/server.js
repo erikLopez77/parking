@@ -8,7 +8,7 @@ const express_1 = __importDefault(require("express"));
 const http_proxy_1 = __importDefault(require("http-proxy"));
 const helmet_1 = __importDefault(require("helmet"));
 const express_handlebars_1 = require("express-handlebars");
-const rutas_1 = require("./rutas");
+const rutasUser_1 = require("./rutasUser");
 const passport_1 = __importDefault(require("passport"));
 const express_session_1 = __importDefault(require("express-session"));
 const port = 5000;
@@ -33,7 +33,7 @@ expressApp.use((0, express_session_1.default)({
     cookie: { secure: false, maxAge: 1000 * 60 * 60 }
 }));
 expressApp.use(passport_1.default.initialize());
-(0, rutas_1.registerFormRoutes)(expressApp);
+(0, rutasUser_1.registerFormRoutesUser)(expressApp);
 expressApp.use(express_1.default.static("static"));
 expressApp.use(express_1.default.static("node_modules/bootstrap/dist"));
 //use agrega middleware redirige req a la url de target, no Sockets
