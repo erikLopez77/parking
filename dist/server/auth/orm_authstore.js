@@ -19,9 +19,9 @@ class OrmAuthStore {
         (0, orm_auth_models_1.initializeAuthModels)(this.sequelize);
         await this.sequelize.drop();
         await this.sequelize.sync();
-        await this.storeOrUpdateUser("ErikLopez", "mysecret");
-        await this.storeOrUpdateUser("alice", "mysecret");
-        await this.storeOrUpdateUser("bob", "mysecret");
+        await this.storeOrUpdateUser("Erik", "Espinosa Lopez", "espinozalopezerik@gmail.com", "1234", "espinozalopezerik@gmail.com", 5299123412341234, 123, 10, 2031, "Erik Lopez");
+        await this.storeOrUpdateUser("Alice", "Lance", "alice", "mysecret", "alice@gmail.com", 5299111122223333, 113, 10, 2031, "Alice Lance");
+        await this.storeOrUpdateUser("Bob", "Peterson", "bob", "mysecret", "bob@gmail.com", 5299444433332222, 321, 8, 2030, "Bob Peterson");
         await this.storeOrUpdateRole({
             name: "Users", members: ["alice", "bob"]
         });
@@ -30,13 +30,13 @@ class OrmAuthStore {
         });
     }
     async getUser(name) {
-        return await orm_auth_models_1.CredentialsModel.findByPk(name);
+        return await orm_auth_models_1.User.findByPk(name);
     }
-    async storeOrUpdateUser(username, password) {
+    async storeOrUpdateUser(name, lastname, username, password, email, card, cvv, expM, expY, cardholder) {
         const salt = (0, crypto_1.randomBytes)(16); //se genera salt
         const hashedPassword = await this.createHashCode(password, salt); //se hashea password
-        const [model] = await orm_auth_models_1.CredentialsModel.upsert({
-            username, hashedPassword, salt //inserta o actualiza usuario
+        const [model] = await orm_auth_models_1.User.upsert({
+            name, lastname, username, hashedPassword, salt, email, card, cvv, expM, expY, cardholder //inserta o actualiza usuario
         });
         return model; //modelo creado o actualizado
     }
@@ -65,7 +65,7 @@ class OrmAuthStore {
     async getRole(name) {
         const stored = await orm_auth_models_1.RoleModel.findByPk(name, {
             //datos asociados al modelo de credenciales, prop.del  modelo que se completarán en el resultado
-            include: [{ model: orm_auth_models_1.CredentialsModel, attributes: ["username"] }]
+            include: [{ model: orm_auth_models_1.User, attributes: ["username"] }]
         });
         if (stored) {
             return {
@@ -80,7 +80,7 @@ class OrmAuthStore {
         return (await orm_auth_models_1.RoleModel.findAll({
             //acepta role y consulta bd p/ objetos coincidentes
             include: [{
-                    model: orm_auth_models_1.CredentialsModel,
+                    model: orm_auth_models_1.User,
                     where: { username },
                     attributes: [] //no se recuperan las demas columnas
                 }]
@@ -88,19 +88,22 @@ class OrmAuthStore {
     }
     async storeOrUpdateRole(role) {
         return await this.sequelize.transaction(async (transaction) => {
-            //en la bd se busca credentialsmodels coincidentes
-            const users = await orm_auth_models_1.CredentialsModel.findAll({
+            //en la bd se busca user coincidentes en role.members
+            const users = await orm_auth_models_1.User.findAll({
+                //valores donde username está en rolemembers
                 where: { username: { [sequelize_1.Op.in]: role.members } },
-                transaction
-            }); //se garantiza la membresía de rol
+                transaction //los datos no se pueden leer ni modificar  hasta confirmar transaction
+            }); //se crea o encuentra un rol cuyo name coincida con role.name
             const [rm] = await orm_auth_models_1.RoleModel.findOrCreate({
+                //role.name está en tabla role model
                 where: { name: role.name }, transaction
-            }); //establece la membresía de rol
+            }); //establece asociación entre rol (rm) y usuarios
             await rm.setCredentialsModels(users, { transaction });
             return role;
         });
     } //obtiene roles de un usuario y verifica que coincidan con un rol requerido
     async validateMembership(username, rolename) {
+        //obtiene todos los roles del usuario con getRolesForUser, includes verifica si esta rolename
         return (await this.getRolesForUser(username)).includes(rolename);
     }
 }

@@ -1,5 +1,5 @@
 import { Sequelize, Op } from "sequelize";
-import { CredentialsModel, initializeAuthModels, RoleModel }
+import { User, initializeAuthModels, RoleModel }
     from "./orm_auth_models";
 import { AuthStore, Role } from "./auth_types";
 import { pbkdf2, randomBytes, timingSafeEqual } from "crypto";
@@ -18,9 +18,12 @@ export class OrmAuthStore implements AuthStore {
         initializeAuthModels(this.sequelize);
         await this.sequelize.drop();
         await this.sequelize.sync();
-        await this.storeOrUpdateUser("ErikLopez", "mysecret");
-        await this.storeOrUpdateUser("alice", "mysecret");
-        await this.storeOrUpdateUser("bob", "mysecret");
+        await this.storeOrUpdateUser("Erik", "Espinosa Lopez",
+            "espinozalopezerik@gmail.com", "1234", "espinozalopezerik@gmail.com", 5299123412341234, 123, 10, 2031, "Erik Lopez");
+        await this.storeOrUpdateUser("Alice", "Lance",
+            "alice", "mysecret", "alice@gmail.com", 5299111122223333, 113, 10, 2031, "Alice Lance");
+        await this.storeOrUpdateUser("Bob", "Peterson",
+            "bob", "mysecret", "bob@gmail.com", 5299444433332222, 321, 8, 2030, "Bob Peterson");
         await this.storeOrUpdateRole({
             name: "Users", members: ["alice", "bob"]
         });
@@ -29,13 +32,13 @@ export class OrmAuthStore implements AuthStore {
         });
     }
     async getUser(name: string) {//recupera credenciales buscando por su nombre
-        return await CredentialsModel.findByPk(name);
+        return await User.findByPk(name);
     }
-    async storeOrUpdateUser(username: string, password: string) {
+    async storeOrUpdateUser(name: string, lastname: string, username: string, password: string, email: string, card: number, cvv: number, expM: number, expY: number, cardholder: string) {
         const salt = randomBytes(16); //se genera salt
         const hashedPassword = await this.createHashCode(password, salt);//se hashea password
-        const [model] = await CredentialsModel.upsert({
-            username, hashedPassword, salt//inserta o actualiza usuario
+        const [model] = await User.upsert({
+            name, lastname, username, hashedPassword, salt, email, card, cvv, expM, expY, cardholder//inserta o actualiza usuario
         });
         return model; //modelo creado o actualizado
     }
@@ -64,7 +67,7 @@ export class OrmAuthStore implements AuthStore {
     async getRole(name: string) {
         const stored = await RoleModel.findByPk(name, {
             //datos asociados al modelo de credenciales, prop.del  modelo que se completarán en el resultado
-            include: [{ model: CredentialsModel, attributes: ["username"] }]
+            include: [{ model: User, attributes: ["username"] }]
         });
         if (stored) {
             return {//nombre del rol
@@ -79,7 +82,7 @@ export class OrmAuthStore implements AuthStore {
         return (await RoleModel.findAll({
             //acepta role y consulta bd p/ objetos coincidentes
             include: [{//relación con role model
-                model: CredentialsModel,
+                model: User,
                 where: { username },//selección en funciónn a username
                 attributes: []//no se recuperan las demas columnas
             }]
@@ -87,19 +90,22 @@ export class OrmAuthStore implements AuthStore {
     }
     async storeOrUpdateRole(role: Role) {
         return await this.sequelize.transaction(async (transaction) => {
-            //en la bd se busca credentialsmodels coincidentes
-            const users = await CredentialsModel.findAll({
+            //en la bd se busca user coincidentes en role.members
+            const users = await User.findAll({
+                //valores donde username está en rolemembers
                 where: { username: { [Op.in]: role.members } },
-                transaction
-            });//se garantiza la membresía de rol
+                transaction//los datos no se pueden leer ni modificar  hasta confirmar transaction
+            });//se crea o encuentra un rol cuyo name coincida con role.name
             const [rm] = await RoleModel.findOrCreate({
+                //role.name está en tabla role model
                 where: { name: role.name }, transaction
-            });//establece la membresía de rol
+            });//establece asociación entre rol (rm) y usuarios
             await rm.setCredentialsModels(users, { transaction });
             return role;
         });
     }//obtiene roles de un usuario y verifica que coincidan con un rol requerido
     async validateMembership(username: string, rolename: string) {
+        //obtiene todos los roles del usuario con getRolesForUser, includes verifica si esta rolename
         return (await this.getRolesForUser(username)).includes(rolename);
     }
 }

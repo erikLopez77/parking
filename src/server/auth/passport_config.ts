@@ -22,3 +22,16 @@ export const configurePassport = (config: Config) => {
         callback(null, user as Express.User);
     });
 }
+export function isAuthenticated(req: any, res: any, next: any) {
+    if (req.isAuthenticated()) { // Passport agrega este método automáticamente
+        return next();
+    }
+    res.redirect('/login'); // Si no está autenticado, lo rediriges al login
+}
+
+// Ejemplo de uso
+/* app.get('/admin', authorize('admin'), (req, res) => {
+    res.send('Panel de administración');
+}); */
+
+
