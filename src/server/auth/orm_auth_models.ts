@@ -11,7 +11,7 @@ export class User extends Model<InferAttributes<User>,
     declare hashedPassword: Buffer;
     declare salt: Buffer;
     declare email: string;
-    declare card: number;
+    declare card: string;
     declare cvv: number;
     declare expM: number;
     declare expY: number;
@@ -50,7 +50,7 @@ export class RoleModel extends Model<InferAttributes<RoleModel>,
         HasManySetAssociationsMixin<User, string>;
 }
 export const initializeAuthModels = (sequelize: Sequelize) => {
-    User.init({//tal vez quito el id 
+    User.init({
         name: { type: DataTypes.STRING },
         lastname: { type: DataTypes.STRING },
         username: { type: DataTypes.STRING, primaryKey: true },
@@ -58,7 +58,7 @@ export const initializeAuthModels = (sequelize: Sequelize) => {
         hashedPassword: { type: DataTypes.BLOB },
         salt: { type: DataTypes.BLOB },
         email: { type: DataTypes.STRING },
-        card: { type: DataTypes.NUMBER },
+        card: { type: DataTypes.STRING },
         cvv: { type: DataTypes.NUMBER, validate: { min: 100, max: 999 } },
         expM: { type: DataTypes.NUMBER, validate: { min: 1, max: 12 } },
         expY: { type: DataTypes.NUMBER, validate: { min: 2024 } },

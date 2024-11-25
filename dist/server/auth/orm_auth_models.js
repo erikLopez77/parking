@@ -24,7 +24,7 @@ const initializeAuthModels = (sequelize) => {
         hashedPassword: { type: sequelize_1.DataTypes.BLOB },
         salt: { type: sequelize_1.DataTypes.BLOB },
         email: { type: sequelize_1.DataTypes.STRING },
-        card: { type: sequelize_1.DataTypes.NUMBER },
+        card: { type: sequelize_1.DataTypes.STRING },
         cvv: { type: sequelize_1.DataTypes.NUMBER, validate: { min: 100, max: 999 } },
         expM: { type: sequelize_1.DataTypes.NUMBER, validate: { min: 1, max: 12 } },
         expY: { type: sequelize_1.DataTypes.NUMBER, validate: { min: 2024 } },

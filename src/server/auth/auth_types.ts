@@ -5,7 +5,7 @@ export interface user {
     hashedPassword: Buffer;
     salt: Buffer;
     email: string;
-    card: number;
+    card: string;
     cvv: number;
     expM: number;
     expY: number;
@@ -25,7 +25,7 @@ export interface Role {
 export interface AuthStore {
     getUser(name: string): Promise<user | null>;
     storeOrUpdateUser(name: string, lastname: string, username: string, password: string, email: string,
-        card: number, cvv: number, expM: number, expY: number, cardholder: string):
+        card: string, cvv: number, expM: number, expY: number, cardholder: string):
         Promise<user>;
     validateCredentials(username: string, password: string): Promise<boolean>;
     getRole(name: string): Promise<Role | null>;

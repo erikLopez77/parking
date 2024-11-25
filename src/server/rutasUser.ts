@@ -3,7 +3,7 @@ import { AuthStore } from "./auth/auth_types";
 import { OrmAuthStore } from "./auth/orm_authstore";
 import passport from "passport";
 import { configurePassport, isAuthenticated } from "./auth/passport_config";
-import { log } from "console";
+import { getValidationResults, validate } from "./validator/validation";
 
 const jwt_secret = "mytokensecret";
 const store: AuthStore = new OrmAuthStore();
@@ -32,17 +32,7 @@ export const registerFormRoutesUser = (app: Express) => {
             = req.authenticated = req.user !== undefined;
         next();
     });
-    /* function authorize(roles = []) {
-        if (typeof roles === 'string') {
-            roles = [roles];
-        }
-        return (req: any, res: any, next: any) => {
-            if (!req.session.user || !roles.includes(req.locals.user.role)) {
-                return res.status(403).send('No tienes permiso para acceder.');
-            }
-            next();
-        };
-    } */
+
     app.get("/loggin", (req, res) => {
         const data = {
             failed: req.query["failed"] ? true : false,
@@ -66,21 +56,37 @@ export const registerFormRoutesUser = (app: Express) => {
     app.get("/saveUser", (req, res) => {
         res.render("saveUser");
     });
-    app.post("/saveUser", async (req, res) => {
-        const user = req.body;
-        if (!user.username || !user.password) {
-            return res.status(400).render("saveUser", { error: "Todos los campos son obligatorios." });
-        }
-        try {
-            // Almacena el usuario en la base de datos usando `store`
-            const model = await store.storeOrUpdateUser(user.name, user.lastname, user.username, user.password, user.email, user.card, user.cvv, user.expM, user.expY, user.cardholder); // Método ficticio, ajusta según tu implementación
-            console.log(model.username);
-            res.redirect("/loggin"); // Redirige al login después del registro
-        } catch (error) {
-            console.error(error);
-            res.status(500).render("saveUser", { error: "Error al registrar usuario." });
-        }
-    });
+    app.post("/saveUser",
+        validate("name").required().minLength(2).isText(),
+        validate("lastname").required().isText().minLength(2),
+        validate("username").required(),
+        validate("password").required(),
+        validate("email").required().isEmail(),
+        validate("card").required().minLength(16).maxLength(19),
+        validate("cvv").required().minLength(3).maxLength(4),
+        validate("expM").required().greaterThan(0).lessThan(13),
+        validate("expY").required().greaterThan(2024),
+        validate("cardholder").required().isText(),
+        async (req, res) => {
+            const validation = getValidationResults(req);
+            if (validation.valid) {
+                try {
+                    const user = req.body;
+                    // Almacena el usuario en la base de datos usando `store`
+                    const model = await store.storeOrUpdateUser(user.name, user.lastname, user.username, user.password, user.email, user.card, user.cvv, user.expM, user.expY, user.cardholder); // Método ficticio, ajusta según tu implementación
+                    console.log(model.username);
+                    await store.storeOrUpdateRole({
+                        name: "Users", members: [model.username]
+                    });
+                    res.redirect("/loggin"); // Redirige al login después del registro
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).render("saveUser", { error: "Error al registrar usuario." });
+                }
+            } else {
+                res.status(400).json({ success: false, message: "Validación fallida" });
+            }
+        });
 
     app.get('/logout', (req, res) => {
         req.session.destroy(err => {

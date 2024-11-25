@@ -19,9 +19,9 @@ class OrmAuthStore {
         (0, orm_auth_models_1.initializeAuthModels)(this.sequelize);
         await this.sequelize.drop();
         await this.sequelize.sync();
-        await this.storeOrUpdateUser("Erik", "Espinosa Lopez", "espinozalopezerik@gmail.com", "1234", "espinozalopezerik@gmail.com", 5299123412341234, 123, 10, 2031, "Erik Lopez");
-        await this.storeOrUpdateUser("Alice", "Lance", "alice", "mysecret", "alice@gmail.com", 5299111122223333, 113, 10, 2031, "Alice Lance");
-        await this.storeOrUpdateUser("Bob", "Peterson", "bob", "mysecret", "bob@gmail.com", 5299444433332222, 321, 8, 2030, "Bob Peterson");
+        await this.storeOrUpdateUser("Erik", "Espinosa Lopez", "espinozalopezerik@gmail.com", "1234", "espinozalopezerik@gmail.com", "55799123412341234", 123, 10, 2031, "Erik Lopez");
+        await this.storeOrUpdateUser("Alice", "Lance", "alice", "mysecret", "alice@gmail.com", "5579111122223333", 113, 10, 2031, "Alice Lance");
+        await this.storeOrUpdateUser("Bob", "Peterson", "bob", "mysecret", "bob@gmail.com", "5579444433332222", 321, 8, 2030, "Bob Peterson");
         await this.storeOrUpdateRole({
             name: "Users", members: ["alice", "bob"]
         });
