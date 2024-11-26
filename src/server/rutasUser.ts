@@ -1,9 +1,11 @@
+import { Op } from "sequelize";
 import { Express, NextFunction, Request, RequestHandler, Response } from "express";
 import { AuthStore } from "./auth/auth_types";
 import { OrmAuthStore } from "./auth/orm_authstore";
 import passport from "passport";
 import { configurePassport, isAuthenticated } from "./auth/passport_config";
 import { getValidationResults, validate } from "./validator/validation";
+import { RoleModel } from "./auth/orm_auth_models";
 
 const jwt_secret = "mytokensecret";
 const store: AuthStore = new OrmAuthStore();
@@ -74,10 +76,13 @@ export const registerFormRoutesUser = (app: Express) => {
                     const user = req.body;
                     // Almacena el usuario en la base de datos usando `store`
                     const model = await store.storeOrUpdateUser(user.name, user.lastname, user.username, user.password, user.email, user.card, user.cvv, user.expM, user.expY, user.cardholder); // Método ficticio, ajusta según tu implementación
-                    console.log(model.username);
+                    const usersM = await store.getRoleMembers("Users");
+                    usersM.push(model.username);
+                    console.log(usersM);
                     await store.storeOrUpdateRole({
-                        name: "Users", members: [model.username]
+                        name: "Users", members: usersM
                     });
+
                     res.redirect("/loggin"); // Redirige al login después del registro
                 } catch (error) {
                     console.error(error);

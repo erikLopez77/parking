@@ -48,9 +48,11 @@ const registerFormRoutesUser = (app) => {
                 const user = req.body;
                 // Almacena el usuario en la base de datos usando `store`
                 const model = await store.storeOrUpdateUser(user.name, user.lastname, user.username, user.password, user.email, user.card, user.cvv, user.expM, user.expY, user.cardholder); // Método ficticio, ajusta según tu implementación
-                console.log(model.username);
+                const usersM = await store.getRoleMembers("Users");
+                usersM.push(model.username);
+                console.log(usersM);
                 await store.storeOrUpdateRole({
-                    name: "Users", members: [model.username]
+                    name: "Users", members: usersM
                 });
                 res.redirect("/loggin"); // Redirige al login después del registro
             }

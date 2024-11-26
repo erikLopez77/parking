@@ -24,6 +24,7 @@ export interface Role {
 //interfcae p/ recuperar y almacenar credenciales
 export interface AuthStore {
     getUser(name: string): Promise<user | null>;
+    getRoleMembers(roleName: string): Promise<string[]>;
     storeOrUpdateUser(name: string, lastname: string, username: string, password: string, email: string,
         card: string, cvv: number, expM: number, expY: number, cardholder: string):
         Promise<user>;

@@ -1,6 +1,6 @@
 import {
     DataTypes, InferAttributes, InferCreationAttributes, Model,
-    Sequelize, HasManySetAssociationsMixin
+    Sequelize, HasManySetAssociationsMixin,
 } from "sequelize";
 import { user, Role, booking } from "./auth_types";
 export class User extends Model<InferAttributes<User>,

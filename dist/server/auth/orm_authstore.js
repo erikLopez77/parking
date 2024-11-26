@@ -19,18 +19,29 @@ class OrmAuthStore {
         (0, orm_auth_models_1.initializeAuthModels)(this.sequelize);
         await this.sequelize.drop();
         await this.sequelize.sync();
-        await this.storeOrUpdateUser("Erik", "Espinosa Lopez", "espinozalopezerik@gmail.com", "1234", "espinozalopezerik@gmail.com", "55799123412341234", 123, 10, 2031, "Erik Lopez");
+        await this.storeOrUpdateUser("Erik", "Espinosa Lopez", "ErikLopez", "1234", "espinozalopezerik@gmail.com", "55799123412341234", 123, 10, 2031, "Erik Lopez");
         await this.storeOrUpdateUser("Alice", "Lance", "alice", "mysecret", "alice@gmail.com", "5579111122223333", 113, 10, 2031, "Alice Lance");
         await this.storeOrUpdateUser("Bob", "Peterson", "bob", "mysecret", "bob@gmail.com", "5579444433332222", 321, 8, 2030, "Bob Peterson");
         await this.storeOrUpdateRole({
-            name: "Users", members: ["alice", "bob"]
+            name: "Admins", members: ["ErikLopez"]
         });
         await this.storeOrUpdateRole({
-            name: "Admins", members: ["ErikLopez"]
+            name: "Users", members: ["alice", "bob"]
         });
     }
     async getUser(name) {
         return await orm_auth_models_1.User.findByPk(name);
+    }
+    async getRoleMembers(roleName) {
+        const role = await orm_auth_models_1.RoleModel.findOne({
+            where: { name: roleName },
+            include: [{ model: orm_auth_models_1.User, as: "CredentialsModels", attributes: ["username"] }] // Incluir los usuarios asociados
+        });
+        if (role) {
+            // Extraer y devolver los nombres de usuario de los miembros
+            return role.CredentialsModels?.map(user => user.username) ?? [];
+        }
+        return []; // Devolver una lista vacía si no se encuentra el rol
     }
     async storeOrUpdateUser(name, lastname, username, password, email, card, cvv, expM, expY, cardholder) {
         const salt = (0, crypto_1.randomBytes)(16); //se genera salt
@@ -94,11 +105,13 @@ class OrmAuthStore {
                 where: { username: { [sequelize_1.Op.in]: role.members } },
                 transaction //los datos no se pueden leer ni modificar  hasta confirmar transaction
             }); //se crea o encuentra un rol cuyo name coincida con role.name
+            console.log(users.map(m => m.name));
             const [rm] = await orm_auth_models_1.RoleModel.findOrCreate({
                 //role.name está en tabla role model
                 where: { name: role.name }, transaction
             }); //establece asociación entre rol (rm) y usuarios
             await rm.setCredentialsModels(users, { transaction });
+            console.log("\n\n");
             return role;
         });
     } //obtiene roles de un usuario y verifica que coincidan con un rol requerido
