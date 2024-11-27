@@ -12,13 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             });
-            if (!response.ok) {
-                // Handle non-200 status codes (e.g., validation errors)
-                const error = await response.json();
-                alert(error.message); // Or display a more user-friendly error message
-                return;
-            }
+            console.log("Response Status:", response.status);
             const message = await response.json();
+            console.log("Response Data:", message);
+
             console.log("message form:" + message);
             if (message.success) {
                 alert("Usuario registrado exitosamente");
