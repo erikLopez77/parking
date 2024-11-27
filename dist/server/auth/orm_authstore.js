@@ -23,10 +23,10 @@ class OrmAuthStore {
         await this.storeOrUpdateUser("Alice", "Lance", "alice", "mysecret", "alice@gmail.com", "5579111122223333", 113, 10, 2031, "Alice Lance");
         await this.storeOrUpdateUser("Bob", "Peterson", "bob", "mysecret", "bob@gmail.com", "5579444433332222", 321, 8, 2030, "Bob Peterson");
         await this.storeOrUpdateRole({
-            name: "Admins", members: ["ErikLopez"]
+            name: "Admins", members: ["ErikLopez", "alice"]
         });
         await this.storeOrUpdateRole({
-            name: "Users", members: ["alice", "bob"]
+            name: "Users", members: ["bob"]
         });
     }
     async getUser(name) {

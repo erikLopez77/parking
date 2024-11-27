@@ -54,15 +54,16 @@ const registerFormRoutesUser = (app) => {
                 await store.storeOrUpdateRole({
                     name: "Users", members: usersM
                 });
-                res.redirect("/loggin"); // Redirige al login después del registro
+                res.status(200).json({ success: true });
+                // res.json({ success: true, redirect: "/loggin" }); // Redirige al login después del registro
             }
             catch (error) {
                 console.error(error);
-                res.status(500).render("saveUser", { error: "Error al registrar usuario." });
+                res.status(500).json({ success: false, message: "Error al registrar usuario." });
             }
         }
         else {
-            res.status(400).json({ success: false, message: "Validación fallida" });
+            res.status(400).json({ success: false, message: "Validación fallida, revisa bien la información" });
         }
     });
     app.get('/logout', (req, res) => {

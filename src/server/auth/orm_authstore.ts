@@ -25,10 +25,10 @@ export class OrmAuthStore implements AuthStore {
         await this.storeOrUpdateUser("Bob", "Peterson",
             "bob", "mysecret", "bob@gmail.com", "5579444433332222", 321, 8, 2030, "Bob Peterson");
         await this.storeOrUpdateRole({
-            name: "Admins", members: ["ErikLopez"]
+            name: "Admins", members: ["ErikLopez", "alice"]
         });
         await this.storeOrUpdateRole({
-            name: "Users", members: ["alice", "bob"]
+            name: "Users", members: ["bob"]
         });
     }
     async getUser(name: string) {//recupera credenciales buscando por su nombre

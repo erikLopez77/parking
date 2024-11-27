@@ -5,34 +5,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{title}}</title>
-  <link rel="stylesheet" href="/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <script src="/js/bootstrap.bundle.min.js" defer></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-  <!-- Barra de navegación -->
   {{#if user}}
-  <header class="header bg-primary py-2">
+  <header class="navbar-custom  text-white py-3">
     <div class="container">
-      <nav class="navbar navbar-expand">
-        <ul class="navbar-nav d-flex flex-row">
-          <a class="nav-link text-white fw-bold" href="/menu">Principal</a>
-          <a class="nav-link text-white fw-bold" href="/places">Lugares</a>
-          <a class="nav-link text-white fw-bold" href="/reservations">Mis Reservaciones</a>
-          <a class="nav-link text-white fw-bold" href="/logout">Cerrar sesión</a>
-        </ul>
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/menu">Parking express</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item"><a class="nav-link" href="/menu">Principal</a></li>
+              <li class="nav-item"><a class="nav-link" href="/places">Lugares</a></li>
+              <li class="nav-item"><a class="nav-link" href="/reservations">Mis Reservaciones</a></li>
+              <li class="nav-item"><a class="nav-link" href="/logout">Cerrar sesión</a></li>
+            </ul>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
   {{else}}
-  <header class="header bg-primary py-2">
+  <header class="navbar-custom  text-white py-3">
     <div class="container">
-      <nav class="navbar navbar-expand">
-        <ul class="navbar-nav d-flex flex-row">
-          <a class="nav-link text-white" href="/menu">Principal</a>
-          <a class="nav-link text-white" href="/places">Lugares</a>
-          <a class="nav-link text-white" href="/reservations">Mis Reservaciones</a>
-        </ul>
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/menu">Parking express</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item"><a class="nav-link" href="/menu">Principal</a></li>
+              <li class="nav-item"><a class="nav-link" href="/places">Lugares</a></li>
+              <li class="nav-item"><a class="nav-link" href="/reservations">Mis Reservaciones</a></li>
+            </ul>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
