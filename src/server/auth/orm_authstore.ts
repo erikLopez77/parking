@@ -31,15 +31,21 @@ export class OrmAuthStore implements AuthStore {
             name: "Users", members: ["bob"]
         });
     }
-    async getUser(name: string) {//recupera credenciales buscando por su nombre
-        return await User.findByPk(name);
+    async getUser(username: string) {//recupera credenciales buscando por su nombre
+        return await User.findByPk(username);
+    }
+    async userExists(username: string): Promise<boolean> {
+        const userExists = await this.getUser(username); // Comprueba si el usuario existe.
+        if (!userExists)
+            return false;
+        return true;
     }
     async getRoleMembers(roleName: string): Promise<string[]> {
         const role = await RoleModel.findOne({
             where: { name: roleName }, // Buscar el rol por su nombre
             include: [{ model: User, as: "CredentialsModels", attributes: ["username"] }] // Incluir los usuarios asociados
         });
-
+        console.log("roles ", roleName, ": ", role);
         if (role) {
             // Extraer y devolver los nombres de usuario de los miembros
             return role.CredentialsModels?.map(user => user.username) ?? [];
@@ -77,6 +83,14 @@ export class OrmAuthStore implements AuthStore {
             })
         })
     }
+    async isUser(username: string): Promise<boolean> {
+        const roles = await this.getRolesForUser(username);
+        console.log(roles);
+        const isUser = roles.includes("Users");
+        if (isUser)
+            return true;
+        return false;
+    }
     async getRole(name: string) {
         const stored = await RoleModel.findByPk(name, {
             //datos asociados al modelo de credenciales, prop.del  modelo que se completarán en el resultado
@@ -95,7 +109,8 @@ export class OrmAuthStore implements AuthStore {
         return (await RoleModel.findAll({
             //acepta role y consulta bd p/ objetos coincidentes
             include: [{//relación con role model
-                model: User,
+                model: User,//modelo con el que se tiene relación
+                as: "CredentialsModels",//alias de la relación
                 where: { username },//selección en funciónn a username
                 attributes: []//no se recuperan las demas columnas
             }]

@@ -13,9 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data),
             });
             console.log("Response Status:", response.status);
+
             const message = await response.json();
             console.log("Response Data:", message);
-
             console.log("message form:" + message);
             if (message.success) {
                 alert("Usuario registrado exitosamente");

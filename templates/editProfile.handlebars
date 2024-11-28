@@ -1,0 +1,58 @@
+<main> {{#each user }}
+    <div class="container vh-100 d-flex justify-content-center align-items-center">
+        <div class="w-50 shadow-lg p-4 rounded" style="background-color: #f9f9f9;">
+            <h2 class="text-center mb-4" style="color: #1167b1;">Registrar Usuario</h2>
+            <form method="post" id="saveUser">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" placeholder="Nombre" name="name" class="form-control form-control-lg mb-2"
+                            value="{{this.name}}" />
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" placeholder="Apellidos" name="lastname" class="form-control form-control-lg"
+                            value="{{this.lastname}}" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input type="text" placeholder="Usuario" name="username" class="form-control form-control-lg"
+                        value="{{this.username}}" />
+                </div>
+                <div class="mb-3">
+                    <input type="password" placeholder="Contraseña" name="password" class="form-control form-control-lg"
+                        autocomplete="current-password" value="{{password}}" />
+                </div>
+                <div class="mb-3">
+                    <input type="email" placeholder="Correo" name="email" class="form-control form-control-lg"
+                        value="{{this.email}}" />
+                </div>
+                <div class="mb-3">
+                    <input type="text" placeholder="No. de tarjeta" name="card" class="form-control form-control-lg"
+                        value="{{this.card}}" />
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" placeholder="CVV" name="cvv" class="form-control form-control-lg"
+                            value="{{this.cvv}}" />
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" placeholder="Mes de expiración" name="expM"
+                            class="form-control form-control-lg" value="{{this.expM}}" />
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" placeholder="Año de expiración" name="expY"
+                            class="form-control form-control-lg" value="{{this.expY}}" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input type="text" placeholder="Titular de tarjeta" name="cardholder"
+                        class="form-control form-control-lg" value="{{this.cardholder}}" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100"
+                    style="background-color: #1167b1; border-color: #1167b1;">
+                    Guardar
+                </button>
+            </form>
+        </div>
+    </div>
+    {{/each }}
+</main>

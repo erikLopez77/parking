@@ -29,14 +29,21 @@ class OrmAuthStore {
             name: "Users", members: ["bob"]
         });
     }
-    async getUser(name) {
-        return await orm_auth_models_1.User.findByPk(name);
+    async getUser(username) {
+        return await orm_auth_models_1.User.findByPk(username);
+    }
+    async userExists(username) {
+        const userExists = await this.getUser(username); // Comprueba si el usuario existe.
+        if (!userExists)
+            return false;
+        return true;
     }
     async getRoleMembers(roleName) {
         const role = await orm_auth_models_1.RoleModel.findOne({
             where: { name: roleName },
             include: [{ model: orm_auth_models_1.User, as: "CredentialsModels", attributes: ["username"] }] // Incluir los usuarios asociados
         });
+        console.log("roles ", roleName, ": ", role);
         if (role) {
             // Extraer y devolver los nombres de usuario de los miembros
             return role.CredentialsModels?.map(user => user.username) ?? [];
@@ -73,6 +80,14 @@ class OrmAuthStore {
             });
         });
     }
+    async isUser(username) {
+        const roles = await this.getRolesForUser(username);
+        console.log(roles);
+        const isUser = roles.includes("Users");
+        if (isUser)
+            return true;
+        return false;
+    }
     async getRole(name) {
         const stored = await orm_auth_models_1.RoleModel.findByPk(name, {
             //datos asociados al modelo de credenciales, prop.del  modelo que se completarán en el resultado
@@ -92,6 +107,7 @@ class OrmAuthStore {
             //acepta role y consulta bd p/ objetos coincidentes
             include: [{
                     model: orm_auth_models_1.User,
+                    as: "CredentialsModels",
                     where: { username },
                     attributes: [] //no se recuperan las demas columnas
                 }]

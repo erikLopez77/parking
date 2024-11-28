@@ -24,11 +24,13 @@ export interface Role {
 //interfcae p/ recuperar y almacenar credenciales
 export interface AuthStore {
     getUser(name: string): Promise<user | null>;
+    userExists(username: string): Promise<boolean>;
     getRoleMembers(roleName: string): Promise<string[]>;
     storeOrUpdateUser(name: string, lastname: string, username: string, password: string, email: string,
         card: string, cvv: number, expM: number, expY: number, cardholder: string):
         Promise<user>;
     validateCredentials(username: string, password: string): Promise<boolean>;
+    isUser(username: string): Promise<boolean>;
     getRole(name: string): Promise<Role | null>;
     getRolesForUser(username: string): Promise<string[]>;
     storeOrUpdateRole(role: Role): Promise<Role>;

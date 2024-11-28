@@ -45,14 +45,40 @@ export const registerFormRoutesUser = (app: Express) => {
 
     // Ruta POST para manejar el formulario enviado
     app.post("/loggin", passport.authenticate("local", {
-        failureRedirect: `/loggin?failed=1`,//caso fallido
-        successRedirect: "/menu"//caso de éxito
-    }));
+        failureRedirect: "/loggin?failed=1",  // Caso fallido
+    }), async (req, res) => {
+        try {
+            const username = req.body.username; // El nombre de usuario del usuario autenticado (esto depende de cómo hayas configurado passport)
 
-    app.get("/menu", isAuthenticated, (req, res) => {
+            // Verificar si es un usuario normal o administrador
+            const isUser = await store.isUser(username);  // Usamos tu función isUser aquí
+            console.log("isUser", isUser);
+            if (isUser) {
+                // Si es un usuario, redirigir a la interfaz de usuario
+                res.redirect("/menuUser");
+            } else {
+                // Si no es un usuario (es decir, es un administrador), redirigir a la interfaz de administrador
+                res.redirect("/menuAdmin");
+            }
+        } catch (error) {
+            console.error("Error al verificar roles:", error);
+            return res.status(500).send("Error en el servidor");
+        }
+    });
+
+
+    app.get("/menuAdmin", (req, res) => {
         // Verifica que el usuario esté autenticado antes de mostrar la página
         // if (req.isAuthenticated()) {
-        res.render("menu", { user: req.user });
+        //res.render("menuAdmin", { user: req.user });
+        res.render("menuAdmin");
+        // }
+    });
+    app.get("/menuUser", (req, res) => {
+        // Verifica que el usuario esté autenticado antes de mostrar la página
+        // if (req.isAuthenticated()) {
+        //
+        res.render("menuUser");
         // }
     });
     app.get("/saveUser", (req, res) => {
