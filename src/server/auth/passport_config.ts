@@ -7,18 +7,20 @@ type Config = {
 }
 export const configurePassport = (config: Config) => {
     passport.use(new LocalStrategy(async (username, password, callback) => {
-        //se validan credenciales
         if (await config.store.validateCredentials(username, password)) {
-            return callback(null, { username });
-        }//devuelve objeto que representa usuario si pasa la verificación
+            // Devuelve un usuario con la propiedad 'role'
+            const role = await config.store.isUser(username); // Método para obtener el rol
+            return callback(null, { username, role }); // Incluye 'role'
+        }
         return callback(null, false);
-        //es falso si falla la verificación
     }));
-    ;//formato p/procesar
+
     passport.serializeUser((user, callback) => {
-        callback(null, user);
-    });//formato entendible
+        callback(null, user); // Almacena todo el objeto usuario
+    });
+
     passport.deserializeUser((user, callback) => {
+        // Recupera el usuario como el tipo esperado
         callback(null, user as Express.User);
     });
 }

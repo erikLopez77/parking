@@ -12,14 +12,15 @@ const store: AuthStore = new OrmAuthStore();
 //type User = { username: string }
 //propiedad de nombre
 declare module "express-session" {
-    interface SessionData { username: string; }
+    interface SessionData { user: { username: string; role: boolean } }
 }//propiedades de usuario
 declare global {
     module Express {
         // interface Request { user: User, authenticated: boolean }
-        interface Request { feathers?: any, authenticated: boolean }
+        interface Request { feathers?: any, authenticated: boolean, user?: User; }// `user` se inyecta por Passport}
         interface User {
             username: string
+            role: boolean
         }
     }
 }
@@ -29,12 +30,15 @@ export const registerFormRoutesUser = (app: Express) => {
     //autentica solicitudes, sesion es la fuente de datos de autenticacion
     //passport busca a req.session
     app.use(passport.authenticate("session"), (req, resp, next) => {
-        resp.locals.user = req.user;
-        resp.locals.authenticated
-            = req.authenticated = req.user !== undefined;
+        if (req.session.user) {
+            resp.locals.user = req.session.user; // Pasa el usuario completo
+            resp.locals.authenticated = true;
+        } else {
+            resp.locals.user = null;
+            resp.locals.authenticated = false;
+        }
         next();
     });
-
     app.get("/loggin", (req, res) => {
         const data = {
             failed: req.query["failed"] ? true : false,
@@ -52,13 +56,18 @@ export const registerFormRoutesUser = (app: Express) => {
 
             // Verificar si es un usuario normal o administrador
             const isUser = await store.isUser(username);  // Usamos tu función isUser aquí
+            req.session.user = {
+                username: username,
+                role: isUser
+            };
+
             console.log("isUser", isUser);
             if (isUser) {
                 // Si es un usuario, redirigir a la interfaz de usuario
-                res.redirect("/menuUser");
+                res.render("menuUser",);
             } else {
                 // Si no es un usuario (es decir, es un administrador), redirigir a la interfaz de administrador
-                res.redirect("/menuAdmin");
+                res.render("menuAdmin",);
             }
         } catch (error) {
             console.error("Error al verificar roles:", error);

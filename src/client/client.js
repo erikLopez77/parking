@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    //p vista Save User
     const formsaveU = document.querySelector('#saveUser');
 
     formsaveU.addEventListener('submit', async (e) => {
@@ -28,4 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Hubo un error inesperado. Por favor, inténtalo más tarde.");
         }
     });
+
+    //
 });

@@ -8,18 +8,18 @@ const passport_1 = __importDefault(require("passport"));
 const passport_local_1 = require("passport-local");
 const configurePassport = (config) => {
     passport_1.default.use(new passport_local_1.Strategy(async (username, password, callback) => {
-        //se validan credenciales
         if (await config.store.validateCredentials(username, password)) {
-            return callback(null, { username });
-        } //devuelve objeto que representa usuario si pasa la verificación
+            // Devuelve un usuario con la propiedad 'role'
+            const role = await config.store.isUser(username); // Método para obtener el rol
+            return callback(null, { username, role }); // Incluye 'role'
+        }
         return callback(null, false);
-        //es falso si falla la verificación
     }));
-    ; //formato p/procesar
     passport_1.default.serializeUser((user, callback) => {
-        callback(null, user);
-    }); //formato entendible
+        callback(null, user); // Almacena todo el objeto usuario
+    });
     passport_1.default.deserializeUser((user, callback) => {
+        // Recupera el usuario como el tipo esperado
         callback(null, user);
     });
 };

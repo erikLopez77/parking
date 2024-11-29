@@ -15,9 +15,14 @@ const registerFormRoutesUser = (app) => {
     //autentica solicitudes, sesion es la fuente de datos de autenticacion
     //passport busca a req.session
     app.use(passport_1.default.authenticate("session"), (req, resp, next) => {
-        resp.locals.user = req.user;
-        resp.locals.authenticated
-            = req.authenticated = req.user !== undefined;
+        if (req.session.user) {
+            resp.locals.user = req.session.user; // Pasa el usuario completo
+            resp.locals.authenticated = true;
+        }
+        else {
+            resp.locals.user = null;
+            resp.locals.authenticated = false;
+        }
         next();
     });
     app.get("/loggin", (req, res) => {
@@ -35,14 +40,18 @@ const registerFormRoutesUser = (app) => {
             const username = req.body.username; // El nombre de usuario del usuario autenticado (esto depende de cómo hayas configurado passport)
             // Verificar si es un usuario normal o administrador
             const isUser = await store.isUser(username); // Usamos tu función isUser aquí
+            req.session.user = {
+                username: username,
+                role: isUser
+            };
             console.log("isUser", isUser);
             if (isUser) {
                 // Si es un usuario, redirigir a la interfaz de usuario
-                res.redirect("/menuUser");
+                res.render("menuUser");
             }
             else {
                 // Si no es un usuario (es decir, es un administrador), redirigir a la interfaz de administrador
-                res.redirect("/menuAdmin");
+                res.render("menuAdmin");
             }
         }
         catch (error) {
