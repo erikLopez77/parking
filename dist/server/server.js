@@ -11,6 +11,7 @@ const express_handlebars_1 = require("express-handlebars");
 const rutasUser_1 = require("./rutasUser");
 const passport_1 = __importDefault(require("passport"));
 const express_session_1 = __importDefault(require("express-session"));
+const path_1 = __importDefault(require("path"));
 const port = 5000;
 const expressApp = (0, express_1.default)();
 const proxy = http_proxy_1.default.createProxyServer({
@@ -35,6 +36,17 @@ expressApp.use((0, express_session_1.default)({
 expressApp.use(passport_1.default.initialize());
 (0, rutasUser_1.registerFormRoutesUser)(expressApp);
 expressApp.use(express_1.default.static("static"));
+//static file
+expressApp.use(express_1.default.static('src/client'));
+expressApp.get('/src/client/reserve.js', (req, res) => {
+    res.type('application/javascript');
+    res.sendFile(path_1.default.join(__dirname, 'src/client/reserve.js'));
+});
+//scripts externos
+expressApp.use((req, res, next) => {
+    res.setHeader("Content-Security-Policy", "script-src 'self';");
+    next();
+});
 expressApp.use(express_1.default.static("node_modules/bootstrap/dist"));
 //use agrega middleware redirige req a la url de target, no Sockets
 expressApp.use("^/$", (req, resp) => resp.redirect("/loggin"));

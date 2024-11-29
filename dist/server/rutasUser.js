@@ -8,6 +8,7 @@ const orm_authstore_1 = require("./auth/orm_authstore");
 const passport_1 = __importDefault(require("passport"));
 const passport_config_1 = require("./auth/passport_config");
 const validation_1 = require("./validator/validation");
+const orm_auth_models_1 = require("./auth/orm_auth_models");
 const jwt_secret = "mytokensecret";
 const store = new orm_authstore_1.OrmAuthStore();
 const registerFormRoutesUser = (app) => {
@@ -101,6 +102,34 @@ const registerFormRoutesUser = (app) => {
             res.status(400).json({ success: false, message: "Validación fallida, revisa bien la información" });
         }
     });
+    app.get('/places', async (req, res) => {
+        const places = await orm_auth_models_1.Place.findAll();
+        const plainPlaces = places.map(place => place.get({ plain: true })); // Convertir a objetos planos
+        res.render("places", { places: plainPlaces }); // Pasar los objetos planos a la plantilla
+    });
+    /*  app.post('/reserve/:placeId', async (req, res) => {
+         try {
+             const { placeId } = req.params;
+             const userPk = req.session.user?.username; // Supongamos que tienes un sistema de sesiones
+ 
+             // Crea una reserva si el lugar está disponible
+             const place = await Place.findByPk(placeId);
+             if (!place || !place.status) {
+                 return res.status(400).send({ success: false, message: 'Lugar no disponible' });
+             }
+ 
+             await Booking.create({
+                 cost: place.cost,
+                 userPk,
+                 placePk: placeId,
+             });
+ 
+             res.send({ success: true });
+         } catch (error) {
+             console.error('Error al reservar lugar:', error);
+             res.status(500).send({ success: false, message: 'Error interno del servidor' });
+         }
+     }); */
     app.get('/logout', (req, res) => {
         req.session.destroy(err => {
             if (err) {
@@ -118,7 +147,7 @@ const roleGuard = (role) => {
         if (req.authenticated) { //verifica si el usuario está autenticado , authenticated está en passport
             const username = req.user?.username; //obtiene el nombre del ususario
             if (username != undefined
-                //valida el username y el rol, vM en ormauthstore 
+                //valida el username y el rol, vM en ormauthstore
                 && await store.validateMembership(username, role)) {
                 next(); //si tiene el rol requerido, permite el acceso
                 return;

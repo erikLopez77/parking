@@ -35,9 +35,7 @@ const initializeAuthModels = (sequelize) => {
     }, { sequelize });
     Booking.init({
         id: { type: sequelize_1.DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        entry: { type: sequelize_1.DataTypes.DATE },
-        exit: { type: sequelize_1.DataTypes.DATE },
-        cost: { type: sequelize_1.DataTypes.NUMBER },
+        date: { type: sequelize_1.DataTypes.DATEONLY, allowNull: false },
         userPk: { type: sequelize_1.DataTypes.STRING, allowNull: false },
         placePk: { type: sequelize_1.DataTypes.INTEGER, allowNull: false },
     }, {
@@ -46,11 +44,12 @@ const initializeAuthModels = (sequelize) => {
     });
     Place.init({
         id: { type: sequelize_1.DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        entry: { type: sequelize_1.DataTypes.TIME },
+        exit: { type: sequelize_1.DataTypes.TIME },
         // picture: { type: DataTypes.BLOB },
         suburb: { type: sequelize_1.DataTypes.STRING },
         street: { type: sequelize_1.DataTypes.STRING },
         numberS: { type: sequelize_1.DataTypes.NUMBER },
-        status: { type: sequelize_1.DataTypes.BOOLEAN },
         cost: { type: sequelize_1.DataTypes.NUMBER }
     }, { sequelize });
     RoleModel.belongsToMany(User, //name nombreRol

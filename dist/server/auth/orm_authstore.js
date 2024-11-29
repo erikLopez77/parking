@@ -9,9 +9,9 @@ class OrmAuthStore {
     constructor() {
         this.sequelize = new sequelize_1.Sequelize({
             dialect: "sqlite",
-            storage: "orm_auth.db",
-            logging: console.log,
-            logQueryParameters: true //muestra parametros de consultas en los log
+            storage: "orm_auth.db", //db
+            //logging: console.log,//consultas en la consola
+            //logQueryParameters: true//muestra parametros de consultas en los log
         });
         this.initModelAndDatabase();
     }
@@ -28,6 +28,29 @@ class OrmAuthStore {
         await this.storeOrUpdateRole({
             name: "Users", members: ["bob"]
         });
+        await this.initPlaces();
+    }
+    async initPlaces() {
+        const places = [
+            { entry: "08:00:00", exit: "18:00:00", suburb: "Centro", street: "16 de Septiembre", numberS: 101, cost: 50 },
+            { entry: "07:00:00", exit: "19:00:00", suburb: "La Paz", street: "Avenida Juárez", numberS: 202, cost: 60 },
+            { entry: "09:00:00", exit: "17:00:00", suburb: "Zavaleta", street: "Recta a Cholula", numberS: 303, cost: 55 },
+            { entry: "10:00:00", exit: "20:00:00", suburb: "Angelópolis", street: "Blvd. del Niño Poblano", numberS: 404, cost: 70 },
+            { entry: "06:30:00", exit: "15:30:00", suburb: "Centro", street: "5 de Mayo", numberS: 505, cost: 40 },
+            { entry: "08:15:00", exit: "18:45:00", suburb: "San Manuel", street: "Circuito Juan Pablo II", numberS: 606, cost: 65 },
+            { entry: "07:30:00", exit: "16:30:00", suburb: "Chapulco", street: "Blvd. Municipio Libre", numberS: 707, cost: 50 },
+            { entry: "09:45:00", exit: "18:15:00", suburb: "Los Fuertes", street: "Av. Ejército de Oriente", numberS: 808, cost: 60 },
+            { entry: "10:30:00", exit: "19:30:00", suburb: "Xilotzingo", street: "Blvd. Valsequillo", numberS: 909, cost: 55 },
+            { entry: "07:00:00", exit: "20:00:00", suburb: "El Mirador", street: "Av. 11 Sur", numberS: 1001, cost: 45 },
+            { entry: "06:00:00", exit: "14:00:00", suburb: "Analco", street: "2 Oriente", numberS: 150, cost: 35 },
+            { entry: "08:30:00", exit: "18:00:00", suburb: "San Francisco", street: "4 Norte", numberS: 220, cost: 50 },
+            { entry: "07:00:00", exit: "19:00:00", suburb: "El Carmen", street: "3 Poniente", numberS: 315, cost: 45 },
+            { entry: "09:00:00", exit: "17:30:00", suburb: "Huexotitla", street: "31 Oriente", numberS: 412, cost: 60 },
+            { entry: "07:45:00", exit: "20:00:00", suburb: "La Margarita", street: "Calle Margaritas", numberS: 523, cost: 40 },
+        ];
+        for (const place of places) {
+            await this.storeOrUpdatePlace(place.entry, place.exit, place.suburb, place.street, place.numberS, place.cost);
+        }
     }
     async getUser(username) {
         return await orm_auth_models_1.User.findByPk(username);
@@ -134,6 +157,18 @@ class OrmAuthStore {
     async validateMembership(username, rolename) {
         //obtiene todos los roles del usuario con getRolesForUser, includes verifica si esta rolename
         return (await this.getRolesForUser(username)).includes(rolename);
+    }
+    //PLACES
+    async storeOrUpdatePlace(entry, exit, suburb, street, numberS, cost) {
+        await orm_auth_models_1.Place.findOrCreate({
+            where: { suburb, street, numberS },
+            defaults: { entry, exit, suburb, street, numberS, cost }, // Valores para crear si no se encuentra
+        });
+    }
+    async viewPlaces() {
+        const places = await orm_auth_models_1.Place.findAll();
+        console.log(places.map(p => p.suburb));
+        return places;
     }
 }
 exports.OrmAuthStore = OrmAuthStore;

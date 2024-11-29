@@ -1,6 +1,7 @@
 import {
     DataTypes, InferAttributes, InferCreationAttributes, Model,
     Sequelize, HasManySetAssociationsMixin,
+    DateOnlyDataType,
 } from "sequelize";
 import { user, Role, booking } from "./auth_types";
 export class User extends Model<InferAttributes<User>,
@@ -20,22 +21,21 @@ export class User extends Model<InferAttributes<User>,
 }
 export class Booking extends Model<InferAttributes<Booking>,
     InferAttributes<Booking>> implements booking {
-    declare id: number;
-    declare entry: Date;
-    declare exit: Date;
-    declare cost: number;
+    declare id?: number;
+    declare date:string;
     declare userPk: number; // FK a User
     declare placePk: number; // FK a Place
 }
 
 export class Place extends Model<InferAttributes<Place>,
     InferAttributes<Place>> {
-    declare id: number;
+    declare id?: number;
     //declare picture: Buffer;
+    declare entry: string;
+    declare exit: string;
     declare suburb: string;
     declare street: string;
     declare numberS: number;
-    declare status: boolean;
     declare cost: number;
 }
 
@@ -70,9 +70,7 @@ export const initializeAuthModels = (sequelize: Sequelize) => {
     }, { sequelize });
     Booking.init({
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        entry: { type: DataTypes.DATE },
-        exit: { type: DataTypes.DATE },
-        cost: { type: DataTypes.NUMBER },
+        date:{ type: DataTypes.DATEONLY, allowNull: false},
         userPk: { type: DataTypes.STRING, allowNull: false },
         placePk: { type: DataTypes.INTEGER, allowNull: false },
     }, {
@@ -81,11 +79,12 @@ export const initializeAuthModels = (sequelize: Sequelize) => {
     });
     Place.init({
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        entry:{type: DataTypes.TIME},
+        exit:{type: DataTypes.TIME},
         // picture: { type: DataTypes.BLOB },
         suburb: { type: DataTypes.STRING },
         street: { type: DataTypes.STRING },
         numberS: { type: DataTypes.NUMBER },
-        status: { type: DataTypes.BOOLEAN },
         cost: { type: DataTypes.NUMBER }
     }, { sequelize });
 

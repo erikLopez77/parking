@@ -6,6 +6,8 @@ import { engine } from "express-handlebars";
 import { registerFormRoutesUser } from "./rutasUser";
 import passport from "passport";
 import session from "express-session";
+import path from 'path';
+
 const port = 5000;
 const expressApp: Express = express();
 const proxy = httpProxy.createProxyServer({
@@ -32,6 +34,21 @@ expressApp.use(session({
 expressApp.use(passport.initialize());
 registerFormRoutesUser(expressApp);
 expressApp.use(express.static("static"));
+//static file
+expressApp.use(express.static('src/client'));
+expressApp.get('/src/client/reserve.js', (req, res) => {//tipos MIME
+    res.type('application/javascript');
+    res.sendFile(path.join(__dirname, 'src/client/reserve.js'));
+});
+//scripts externos
+expressApp.use((req, res, next) => {
+    res.setHeader(
+        "Content-Security-Policy",
+        "script-src 'self';"
+    );
+    next();
+});
+
 expressApp.use(express.static("node_modules/bootstrap/dist"));
 //use agrega middleware redirige req a la url de target, no Sockets
 expressApp.use("^/$", (req, resp) => resp.redirect("/loggin"));

@@ -1,0 +1,32 @@
+<main class="bg-white py-5">
+  <div class="container">
+    <h1 class="text-center mb-5 text-dark">Lugares Disponibles</h1>
+    <div class="row g-4">
+      {{#each places}}
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body text-white">
+            <h2 class="card-title fs-5 text-warning">Lugar: {{suburb}}</h2>
+            <p class="card-text">
+              <strong>Calle:</strong> {{street}} No. {{numberS}}
+            </p>
+            <p class="card-text">
+              <strong>Costo:</strong> ${{cost}}
+            </p>
+            <p class="card-text">
+              <strong>Horario disponible:</strong> {{entry}} - {{exit}}
+            </p>
+            <button
+              class="btn btn-primary reserve-btn w-100 mt-3"
+              data-id="{{id}}"
+              style="background-color: #187bcd; border-color: #1167b1;">
+              Reservar
+            </button>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+  <script src="/reserve.js"></script>
+</main>
