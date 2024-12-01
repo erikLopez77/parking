@@ -1,6 +1,6 @@
 import { Op } from "sequelize";
 import { Express, NextFunction, Request, RequestHandler, Response } from "express";
-import { AuthStore } from "./auth/auth_types";
+import { AuthStore, booking } from "./auth/auth_types";
 import { OrmAuthStore } from "./auth/orm_authstore";
 import passport from "passport";
 import { configurePassport, isAuthenticated } from "./auth/passport_config";
@@ -17,7 +17,7 @@ declare module "express-session" {
 declare global {
     module Express {
         // interface Request { user: User, authenticated: boolean }
-        interface Request { feathers?: any, authenticated: boolean, user?: User; }// `user` se inyecta por Passport}
+        interface Request { feathers?: any, authenticated: boolean, user?: User; id?: number }// `user` se inyecta por Passport}
         interface User {
             username: string
             role: boolean
@@ -162,13 +162,44 @@ export const registerFormRoutesUser = (app: Express) => {
         }
     });
 
+    app.get("/reservations", async (req, res) => {
+        try {
+            const username = req.session?.user?.username; // Asegúrate de que estás guardando el username en la sesión
+            if (!username) {
+                return res.status(401).send({ success: false, message: "Usuario no autenticado" });
+            }
+
+            const bookingsR = await store.viewBookingsUser(username);
+            res.render("reservations", { bookingsR });
+        } catch (error) {
+            console.error("Error al obtener las reservas:", error);
+            res.status(500).send({ success: false, message: "Error interno del servidor" });
+        }
+    });
+    app.delete("/cancel-reservation/:id", async (req, res) => {
+        try {
+            const { id } = req.params;
+            const deletedRows = await store.deleteBooking(Number(id));
+
+            if (deletedRows > 0) {
+                res.status(200).send({ success: true, message: "Reserva cancelada." });
+            } else {
+                res.status(404).send({ success: false, message: "Reserva no encontrada." });
+            }
+        } catch (error) {
+            console.error("Error al cancelar la reserva:", error);
+            res.status(500).send({ success: false, message: "Error interno del servidor." });
+        }
+    });
+
+
 
     app.get('/logout', (req, res) => {
         req.session.destroy(err => {
             if (err) {
                 return res.status(500).send('No se pudo cerrar la sesión');
             }
-            res.send('Sesión cerrada exitosamente');
+            res.redirect("/");
         });
     });
 }

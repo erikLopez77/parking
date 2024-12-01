@@ -35,21 +35,21 @@ export class OrmAuthStore implements AuthStore {
     }
     async initPlaces(): Promise<void> {
         const places = [
-            { entry: "08:00:00", exit: "18:00:00", suburb: "Centro", street: "16 de Septiembre", numberS: 101, cost: 50 },
-            { entry: "07:00:00", exit: "19:00:00", suburb: "La Paz", street: "Avenida Juárez", numberS: 202, cost: 60 },
-            { entry: "09:00:00", exit: "17:00:00", suburb: "Zavaleta", street: "Recta a Cholula", numberS: 303, cost: 55 },
-            { entry: "10:00:00", exit: "20:00:00", suburb: "Angelópolis", street: "Blvd. del Niño Poblano", numberS: 404, cost: 70 },
-            { entry: "06:30:00", exit: "15:30:00", suburb: "Centro", street: "5 de Mayo", numberS: 505, cost: 40 },
-            { entry: "08:15:00", exit: "18:45:00", suburb: "San Manuel", street: "Circuito Juan Pablo II", numberS: 606, cost: 65 },
-            { entry: "07:30:00", exit: "16:30:00", suburb: "Chapulco", street: "Blvd. Municipio Libre", numberS: 707, cost: 50 },
-            { entry: "09:45:00", exit: "18:15:00", suburb: "Los Fuertes", street: "Av. Ejército de Oriente", numberS: 808, cost: 60 },
-            { entry: "10:30:00", exit: "19:30:00", suburb: "Xilotzingo", street: "Blvd. Valsequillo", numberS: 909, cost: 55 },
-            { entry: "07:00:00", exit: "20:00:00", suburb: "El Mirador", street: "Av. 11 Sur", numberS: 1001, cost: 45 },
-            { entry: "06:00:00", exit: "14:00:00", suburb: "Analco", street: "2 Oriente", numberS: 150, cost: 35 },
-            { entry: "08:30:00", exit: "18:00:00", suburb: "San Francisco", street: "4 Norte", numberS: 220, cost: 50 },
-            { entry: "07:00:00", exit: "19:00:00", suburb: "El Carmen", street: "3 Poniente", numberS: 315, cost: 45 },
-            { entry: "09:00:00", exit: "17:30:00", suburb: "Huexotitla", street: "31 Oriente", numberS: 412, cost: 60 },
-            { entry: "07:45:00", exit: "20:00:00", suburb: "La Margarita", street: "Calle Margaritas", numberS: 523, cost: 40 },
+            { entry: "08:00", exit: "18:00", suburb: "Centro", street: "16 de Septiembre", numberS: 101, cost: 50 },
+            { entry: "07:00", exit: "19:00", suburb: "La Paz", street: "Avenida Juárez", numberS: 202, cost: 60 },
+            { entry: "09:00", exit: "17:00", suburb: "Zavaleta", street: "Recta a Cholula", numberS: 303, cost: 55 },
+            { entry: "10:00", exit: "20:00", suburb: "Angelópolis", street: "Blvd. del Niño Poblano", numberS: 404, cost: 70 },
+            { entry: "06:30", exit: "15:30", suburb: "Centro", street: "5 de Mayo", numberS: 505, cost: 40 },
+            { entry: "08:15", exit: "18:45", suburb: "San Manuel", street: "Circuito Juan Pablo II", numberS: 606, cost: 65 },
+            { entry: "07:30", exit: "16:30", suburb: "Chapulco", street: "Blvd. Municipio Libre", numberS: 707, cost: 50 },
+            { entry: "09:45", exit: "18:15", suburb: "Los Fuertes", street: "Av. Ejército de Oriente", numberS: 808, cost: 60 },
+            { entry: "10:30", exit: "19:30", suburb: "Xilotzingo", street: "Blvd. Valsequillo", numberS: 909, cost: 55 },
+            { entry: "07:00", exit: "20:00", suburb: "El Mirador", street: "Av. 11 Sur", numberS: 1001, cost: 45 },
+            { entry: "06:00", exit: "14:00", suburb: "Analco", street: "2 Oriente", numberS: 150, cost: 35 },
+            { entry: "08:30", exit: "18:00", suburb: "San Francisco", street: "4 Norte", numberS: 220, cost: 50 },
+            { entry: "07:00", exit: "19:00", suburb: "El Carmen", street: "3 Poniente", numberS: 315, cost: 45 },
+            { entry: "09:00", exit: "17:30", suburb: "Huexotitla", street: "31 Oriente", numberS: 412, cost: 60 },
+            { entry: "07:45", exit: "20:00", suburb: "La Margarita", street: "Calle Margaritas", numberS: 523, cost: 40 },
         ];
 
         for (const place of places) {
@@ -185,6 +185,7 @@ export class OrmAuthStore implements AuthStore {
         console.log(places.map(p => p.suburb));
         return places;
     }
+    //BOOKINGS
     async storeBookings(date: string, placeId: number, username: string) {
         try {
             const [booking, created] = await Booking.findOrCreate({
@@ -211,6 +212,29 @@ export class OrmAuthStore implements AuthStore {
             throw error;
         }
     }
+    async viewBookings(): Promise<Record<string, any>[]> {
+        const bookings = await Booking.findAll();
+        return bookings.map(booking => booking.get({ plain: true }));
+    }
 
+    async viewBookingsUser(username: string): Promise<Record<string, any>[]> {
+        const bookings = await Booking.findAll({
+            where: { userPk: username }, // Filtrar por el usuario
+            include: [
+                {
+                    model: Place,
+                    as: 'place',
+                    attributes: ['suburb', 'entry', 'exit'], // Solo obtenemos los campos necesarios
+                },
+            ],
+        });
+        return bookings.map(booking => booking.get({ plain: true }));
+    }
+    async deleteBooking(id: number): Promise<number> {
+        const deletedRows = await Booking.destroy({
+            where: { id }, // Elimina la reserva con el ID especificado
+        });
+        return deletedRows; // Retorna el número de filas eliminadas
+    }
 
 }

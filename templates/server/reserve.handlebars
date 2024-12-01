@@ -5,15 +5,16 @@
         </div>
         <div class="card-body">
             <h5 class="text-center mb-4" style="color: #1167b1;">Selecciona una fecha para reservar:</h5>
-            <form method="post" id="formBooking" action="/reserve/{{id}}">
+            <form method="post" class="reserve" data-id="{{id}}" action="/reserve/{{id}}">
                 <div class="form-group mb-3">
                     <label for="fecha" class="form-label" style="color: #03254c;">Fecha</label>
                     <input type="date" name="date" class="form-control" min="{{hoy}}" value="{{date}}">
                 </div>
-                <button type="submit" data-id="{{id}}" class="btn text-white w-100" style="background-color: #1167b1;">
+                <button type="submit" class="btn text-white w-100" style="background-color: #1167b1;">
                     Enviar
                 </button>
             </form>
         </div>
     </div>
+    <script type="module" src="/client.js"></script>
 </main>

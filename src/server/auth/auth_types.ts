@@ -36,4 +36,7 @@ export interface AuthStore {
     validateMembership(username: string, role: string): Promise<boolean>;
     viewPlaces(): Promise<Place[]>;
     storeBookings(date: string, placeId: number, username: string): Promise<Booking | null>;
+    viewBookings(): Promise<booking[] | null>;
+    viewBookingsUser(username: string): Promise<Record<string, any>[]>;
+    deleteBooking(id: number): Promise<number>;
 }
