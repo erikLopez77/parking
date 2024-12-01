@@ -170,5 +170,32 @@ class OrmAuthStore {
         console.log(places.map(p => p.suburb));
         return places;
     }
+    async storeBookings(date, placeId, username) {
+        try {
+            const [booking, created] = await orm_auth_models_1.Booking.findOrCreate({
+                where: {
+                    date: date,
+                    placePk: placeId, // Id del lugar
+                },
+                defaults: {
+                    userPk: username,
+                    date: date,
+                    placePk: placeId, // Lugar de la reserva
+                },
+            });
+            if (created) {
+                console.log(`Reserva creada exitosamente para el usuario ${username} en el lugar ${placeId} en la fecha ${date}.`);
+                return booking; // Devuelve la reserva creada
+            }
+            else {
+                console.log(`Ya existe una reserva para esta fecha y lugar.`);
+                return null; // No se crea, ya existía
+            }
+        }
+        catch (error) {
+            console.error('Error al crear la reserva:', error);
+            throw error;
+        }
+    }
 }
 exports.OrmAuthStore = OrmAuthStore;

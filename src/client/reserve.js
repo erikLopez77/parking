@@ -1,22 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const buttons = document.querySelectorAll('.reserve-btn');
     buttons.forEach(button => {
-        button.addEventListener('click', (event) => {
+        button.addEventListener('click', async () => {
             const placeId = button.getAttribute('data-id');
-            reserve(placeId); // Asegúrate de que la función `reserve` esté definida.
+            console.log("Se hizo click en el boton");
+            // Redirigir directamente a la página de reserva con el id en la URL
+            window.location.href = `/reserve/${placeId}`;
         });
     });
 });
-function reserve(placeId) {
-    /* fetch(`/reserve/${placeId}`, { method: 'POST' })
-        .then(response => {
-            if (response.ok) {
-                alert('Reserva exitosa');
-                window.location.reload(); // Refresca la página
-            } else {
-                alert('Error al realizar la reserva');
-            }
-        })
-        .catch(error => console.error('Error:', error)); */
-        alert(placeId);
-}

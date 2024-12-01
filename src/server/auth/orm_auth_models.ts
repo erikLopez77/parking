@@ -22,8 +22,8 @@ export class User extends Model<InferAttributes<User>,
 export class Booking extends Model<InferAttributes<Booking>,
     InferAttributes<Booking>> implements booking {
     declare id?: number;
-    declare date:string;
-    declare userPk: number; // FK a User
+    declare date: string;
+    declare userPk: string; // FK a User
     declare placePk: number; // FK a Place
 }
 
@@ -70,7 +70,7 @@ export const initializeAuthModels = (sequelize: Sequelize) => {
     }, { sequelize });
     Booking.init({
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        date:{ type: DataTypes.DATEONLY, allowNull: false},
+        date: { type: DataTypes.DATEONLY, allowNull: false },
         userPk: { type: DataTypes.STRING, allowNull: false },
         placePk: { type: DataTypes.INTEGER, allowNull: false },
     }, {
@@ -79,8 +79,8 @@ export const initializeAuthModels = (sequelize: Sequelize) => {
     });
     Place.init({
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        entry:{type: DataTypes.TIME},
-        exit:{type: DataTypes.TIME},
+        entry: { type: DataTypes.TIME },
+        exit: { type: DataTypes.TIME },
         // picture: { type: DataTypes.BLOB },
         suburb: { type: DataTypes.STRING },
         street: { type: DataTypes.STRING },

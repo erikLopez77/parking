@@ -1,0 +1,19 @@
+<main class="d-flex align-items-center justify-content-center vh-100">
+    <div class="card shadow-lg" style="border: none; max-width: 400px;">
+        <div class="card-header text-white" style="background-color: #03254c;">
+            <h3 class="card-title mb-0 text-center">Reserva tu fecha</h3>
+        </div>
+        <div class="card-body">
+            <h5 class="text-center mb-4" style="color: #1167b1;">Selecciona una fecha para reservar:</h5>
+            <form method="post" id="formBooking" action="/reserve/{{id}}">
+                <div class="form-group mb-3">
+                    <label for="fecha" class="form-label" style="color: #03254c;">Fecha</label>
+                    <input type="date" name="date" class="form-control" min="{{hoy}}" value="{{date}}">
+                </div>
+                <button type="submit" data-id="{{id}}" class="btn text-white w-100" style="background-color: #1167b1;">
+                    Enviar
+                </button>
+            </form>
+        </div>
+    </div>
+</main>

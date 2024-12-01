@@ -107,29 +107,34 @@ const registerFormRoutesUser = (app) => {
         const plainPlaces = places.map(place => place.get({ plain: true })); // Convertir a objetos planos
         res.render("places", { places: plainPlaces }); // Pasar los objetos planos a la plantilla
     });
-    /*  app.post('/reserve/:placeId', async (req, res) => {
-         try {
-             const { placeId } = req.params;
-             const userPk = req.session.user?.username; // Supongamos que tienes un sistema de sesiones
- 
-             // Crea una reserva si el lugar está disponible
-             const place = await Place.findByPk(placeId);
-             if (!place || !place.status) {
-                 return res.status(400).send({ success: false, message: 'Lugar no disponible' });
-             }
- 
-             await Booking.create({
-                 cost: place.cost,
-                 userPk,
-                 placePk: placeId,
-             });
- 
-             res.send({ success: true });
-         } catch (error) {
-             console.error('Error al reservar lugar:', error);
-             res.status(500).send({ success: false, message: 'Error interno del servidor' });
-         }
-     }); */
+    app.get("/reserve/:id", async (req, res) => {
+        const { id } = req.params;
+        const hoy = new Date().toISOString().split('T')[0]; // Obtener fecha actual en formato YYYY-MM-DD
+        console.log(hoy);
+        res.render("reserve", { id, hoy });
+    });
+    app.post("/reserve/:id", async (req, res) => {
+        const { id } = req.params; // Recupera el parámetro id como cadena
+        const numericId = parseInt(id, 10); // Convierte id a número base 10
+        const fecha = req.body.date; // Asegúrate de extraer la propiedad `fecha` del body
+        const username = req.session.user?.username; // Recupera el usuario de la sesión
+        console.log("fecha", fecha, "username", username, "id", id);
+        if (username) {
+            try {
+                const booking = await store.storeBookings(fecha, numericId, username);
+                if (booking) {
+                    res.status(201).send({ success: true, message: 'Reserva creada con éxito', booking });
+                }
+                else {
+                    res.status(409).send({ success: false, message: 'Ya existe una reserva para esta fecha y lugar' });
+                }
+            }
+            catch (error) {
+                console.error('Error al crear la reserva:', error);
+                res.status(500).send({ success: false, message: 'Error interno del servidor' });
+            }
+        }
+    });
     app.get('/logout', (req, res) => {
         req.session.destroy(err => {
             if (err) {

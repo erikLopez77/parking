@@ -1,5 +1,5 @@
 import { Sequelize, Op } from "sequelize";
-import { User, initializeAuthModels, RoleModel, Place }
+import { User, initializeAuthModels, RoleModel, Place, Booking }
     from "./orm_auth_models";
 import { AuthStore, Role } from "./auth_types";
 import { pbkdf2, randomBytes, timingSafeEqual } from "crypto";
@@ -174,15 +174,43 @@ export class OrmAuthStore implements AuthStore {
     }
 
     //PLACES
-    async storeOrUpdatePlace( entry: string, exit: string, suburb: string, street: string, numberS: number, cost: number){
+    async storeOrUpdatePlace(entry: string, exit: string, suburb: string, street: string, numberS: number, cost: number) {
         await Place.findOrCreate({
             where: { suburb, street, numberS }, // Condiciones para buscar un lugar
             defaults: { entry, exit, suburb, street, numberS, cost }, // Valores para crear si no se encuentra
         });
     }
-    async viewPlaces(){
-        const places=await Place.findAll();
-        console.log(places.map(p=>p.suburb));
+    async viewPlaces() {
+        const places = await Place.findAll();
+        console.log(places.map(p => p.suburb));
         return places;
     }
+    async storeBookings(date: string, placeId: number, username: string) {
+        try {
+            const [booking, created] = await Booking.findOrCreate({
+                where: {
+                    date: date,           // Fecha de la reserva
+                    placePk: placeId,     // Id del lugar
+                },
+                defaults: {
+                    userPk: username,     // Usuario (username de la tabla User)
+                    date: date,           // Fecha de la reserva
+                    placePk: placeId,     // Lugar de la reserva
+                },
+            });
+
+            if (created) {
+                console.log(`Reserva creada exitosamente para el usuario ${username} en el lugar ${placeId} en la fecha ${date}.`);
+                return booking; // Devuelve la reserva creada
+            } else {
+                console.log(`Ya existe una reserva para esta fecha y lugar.`);
+                return null; // No se crea, ya existía
+            }
+        } catch (error) {
+            console.error('Error al crear la reserva:', error);
+            throw error;
+        }
+    }
+
+
 }

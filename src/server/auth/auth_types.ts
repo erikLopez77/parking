@@ -1,4 +1,4 @@
-import { Place } from "./orm_auth_models";
+import { Booking, Place } from "./orm_auth_models";
 
 export interface user {
     name: string;
@@ -35,4 +35,5 @@ export interface AuthStore {
     storeOrUpdateRole(role: Role): Promise<Role>;
     validateMembership(username: string, role: string): Promise<boolean>;
     viewPlaces(): Promise<Place[]>;
+    storeBookings(date: string, placeId: number, username: string): Promise<Booking | null>;
 }
