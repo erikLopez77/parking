@@ -100,6 +100,42 @@ export const registerFormRoutesUser = (app: Express) => {
             res.status(401).send("Usuario no autenticado"); // Maneja el caso en el que no hay un usuario
         }
     });
+    app.get("/editUser", (req, res) => {
+        res.render("editUser");
+    });
+    app.post("/editUser", (req, res) => {
+        res.render("updateProfile");
+    });
+    app.get("/updateProfile", (req, res) => {
+        res.render("updateProfile");
+    });
+    app.post("/updateProfile", validate("name").required().minLength(2).isText(),
+        validate("lastname").required().isText().minLength(2),
+        validate("username").required(),
+        validate("password").required(),
+        validate("email").required().isEmail(),
+        validate("card").required().minLength(16).maxLength(19),
+        validate("cvv").required().minLength(3).maxLength(4),
+        validate("expM").required().greaterThan(0).lessThan(13),
+        validate("expY").required().greaterThan(2024),
+        validate("cardholder").required().isText(),
+        async (req, res) => {
+            const validation = getValidationResults(req);
+            if (validation.valid) {
+                try {
+                    const user = req.body;
+                    // Almacena el usuario en la base de datos usando `store`
+                    const model = await store.storeOrUpdateUser(user.name, user.lastname, user.username, user.password, user.email, user.card, user.cvv, user.expM, user.expY, user.cardholder); // Método ficticio, ajusta según tu implementación
+                    res.status(200).json({ success: true });
+                    // res.json({ success: true, redirect: "/loggin" }); // Redirige al login después del registro
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({ success: false, message: "Error al registrar usuario." });
+                }
+            } else {
+                res.status(400).json({ success: false, message: "Validación fallida, revisa bien la información" });
+            }
+        });
 
     app.get("/saveUser", (req, res) => {
         res.render("saveUser");

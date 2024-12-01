@@ -49,6 +49,55 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    //actualizar usuario
+    const formUpdate = document.querySelector('#updateProfile');
+    if (formUpdate) { // Solo añade el evento si el formulario existe
+        formUpdate.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evita el comportamiento por defecto del formulario.
+            const form = new FormData(formUpdate);
+            const data = Object.fromEntries(form.entries()); // Convierte los datos del formulario en un objeto.
+            try {
+                const response = await fetch('/updateProfile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                console.log("Response Status:", response.status);
+
+                const message = await response.json();
+                console.log("Response Data:", message);
+                if (message.success) {
+                    Swal.fire({
+                        title: '¡Éxito!',
+                        text: 'Usuario actualizado exitosamente',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    }).then(() => {
+                        // Redirige después de que el usuario cierre la alerta.
+                        window.location.href = "/myProfile";
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'El usuario no se pudo actualizar. Por favor, revisa los datos.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                    }).then(() => {
+                        window.location.href = "/updateProfile"; // Ajusta la URL según corresponda
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire({
+                    title: 'Error inesperado',
+                    text: 'Hubo un problema en el servidor. Por favor, inténtalo más tarde.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                });
+            }
+        });
+    }
+
     //reserva fecha
     const reserveForm = document.querySelector(".reserve");
     if (reserveForm) { // Solo añade el evento si el formulario existe
