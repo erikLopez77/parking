@@ -205,15 +205,19 @@ class OrmAuthStore {
     async viewBookingsUser(username) {
         const bookings = await orm_auth_models_1.Booking.findAll({
             where: { userPk: username },
+            attributes: ['id'],
             include: [
                 {
                     model: orm_auth_models_1.Place,
                     as: 'place',
-                    attributes: ['suburb', 'entry', 'exit'], // Solo obtenemos los campos necesarios
+                    attributes: ['suburb', 'entry', 'exit'], // Campos específicos del modelo Place
                 },
             ],
         });
-        return bookings.map(booking => booking.get({ plain: true }));
+        return bookings.map(booking => ({
+            id: booking.id,
+            ...booking.get({ plain: true }), // Incluye los atributos planos de la reserva
+        }));
     }
     async deleteBooking(id) {
         const deletedRows = await orm_auth_models_1.Booking.destroy({

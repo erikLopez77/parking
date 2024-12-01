@@ -220,16 +220,22 @@ export class OrmAuthStore implements AuthStore {
     async viewBookingsUser(username: string): Promise<Record<string, any>[]> {
         const bookings = await Booking.findAll({
             where: { userPk: username }, // Filtrar por el usuario
+            attributes: ['id'], // Incluye explícitamente el campo `id` del modelo Booking
             include: [
                 {
                     model: Place,
                     as: 'place',
-                    attributes: ['suburb', 'entry', 'exit'], // Solo obtenemos los campos necesarios
+                    attributes: ['suburb', 'entry', 'exit'], // Campos específicos del modelo Place
                 },
             ],
         });
-        return bookings.map(booking => booking.get({ plain: true }));
+
+        return bookings.map(booking => ({
+            id: booking.id, // Incluye el id de la reserva
+            ...booking.get({ plain: true }), // Incluye los atributos planos de la reserva
+        }));
     }
+
     async deleteBooking(id: number): Promise<number> {
         const deletedRows = await Booking.destroy({
             where: { id }, // Elimina la reserva con el ID especificado

@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    //reserva fecha
     const reserveForm = document.querySelector(".reserve");
     if (reserveForm) { // Solo añade el evento si el formulario existe
         reserveForm.addEventListener('submit', async (e) => {
@@ -95,14 +96,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    const deletebooking = document.querySelector(".delete");
-    if (deletebooking) {
-        // Función para cancelar una reserva
-        buttons.forEach(button => {
+
+    //borrar booking
+    const buttonsD = document.querySelectorAll(".delete"); // Cambié `querySelector` por `querySelectorAll` para seleccionar múltiples botones
+
+    if (buttonsD) {
+        buttonsD.forEach(button => {
             button.addEventListener('click', async () => {
-                const placeId = button.getAttribute('data-id');
+                const placeId = button.getAttribute('data-id'); // Obtiene el ID de la reserva
                 if (confirm("¿Estás seguro de que deseas cancelar esta reserva?")) {
-                    fetch(`/cancel-reservation/${bookingId}`, {
+                    fetch(`/cancel-reservation/${placeId}`, {
                         method: 'DELETE',
                     })
                         .then(response => {
@@ -121,4 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+
 });

@@ -168,7 +168,6 @@ export const registerFormRoutesUser = (app: Express) => {
             if (!username) {
                 return res.status(401).send({ success: false, message: "Usuario no autenticado" });
             }
-
             const bookingsR = await store.viewBookingsUser(username);
             res.render("reservations", { bookingsR });
         } catch (error) {
