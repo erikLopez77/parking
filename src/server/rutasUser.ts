@@ -74,8 +74,9 @@ export const registerFormRoutesUser = (app: Express) => {
             return res.status(500).send("Error en el servidor");
         }
     });
-
-
+    app.get("/menu", (req, res) => {
+        res.render("menu");
+    });
     app.get("/menuAdmin", (req, res) => {
         // Verifica que el usuario esté autenticado antes de mostrar la página
         // if (req.isAuthenticated()) {
@@ -90,6 +91,16 @@ export const registerFormRoutesUser = (app: Express) => {
         res.render("menuUser");
         // }
     });
+    app.get("/myProfile", async (req, res) => {
+        const username: string | undefined = req.session.user?.username; // Recupera el usuario de la sesión
+        if (username) {
+            const user = await store.getUser(username);
+            res.render("myProfile", { user });
+        } else {
+            res.status(401).send("Usuario no autenticado"); // Maneja el caso en el que no hay un usuario
+        }
+    });
+
     app.get("/saveUser", (req, res) => {
         res.render("saveUser");
     });
@@ -190,8 +201,6 @@ export const registerFormRoutesUser = (app: Express) => {
             res.status(500).send({ success: false, message: "Error interno del servidor." });
         }
     });
-
-
 
     app.get('/logout', (req, res) => {
         req.session.destroy(err => {
