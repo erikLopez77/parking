@@ -64,9 +64,18 @@ export class OrmAuthStore implements AuthStore {
         }
     }
 
-    async getUser(username: string) {//recupera credenciales buscando por su nombre
-        return await User.findByPk(username);
+    async getUser(username: string) {
+        // Recupera credenciales buscando por su nombre de usuario
+        const user: User | null = await User.findByPk(username);
+
+        if (user) {
+            // Convierte la instancia a un objeto plano
+            return user.get({ plain: true });
+        } else {
+            return null;
+        }
     }
+
     async userExists(username: string): Promise<boolean> {
         const userExists = await this.getUser(username); // Comprueba si el usuario existe.
         if (!userExists)

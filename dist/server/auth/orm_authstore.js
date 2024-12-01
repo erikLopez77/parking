@@ -53,7 +53,15 @@ class OrmAuthStore {
         }
     }
     async getUser(username) {
-        return await orm_auth_models_1.User.findByPk(username);
+        // Recupera credenciales buscando por su nombre de usuario
+        const user = await orm_auth_models_1.User.findByPk(username);
+        if (user) {
+            // Convierte la instancia a un objeto plano
+            return user.get({ plain: true });
+        }
+        else {
+            return null;
+        }
     }
     async userExists(username) {
         const userExists = await this.getUser(username); // Comprueba si el usuario existe.
