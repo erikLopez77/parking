@@ -15,14 +15,16 @@ const registerFormRoutesUser = (app) => {
     (0, passport_config_1.configurePassport)({ store, jwt_secret });
     //autentica solicitudes, sesion es la fuente de datos de autenticacion
     //passport busca a req.session
-    app.use(passport_1.default.authenticate("session"), (req, resp, next) => {
+    app.use(passport_1.default.authenticate("session"), (req, res, next) => {
         if (req.session.user) {
-            resp.locals.user = req.session.user; // Pasa el usuario completo
-            resp.locals.authenticated = true;
+            req.authenticated = true; // Asignas el valor en req
+            res.locals.user = req.session.user; // Pasas el usuario a res.locals
+            res.locals.authenticated = true;
         }
         else {
-            resp.locals.user = null;
-            resp.locals.authenticated = false;
+            req.authenticated = false; // Asignas el valor en req
+            res.locals.user = null;
+            res.locals.authenticated = false;
         }
         next();
     });
@@ -36,7 +38,7 @@ const registerFormRoutesUser = (app) => {
     // Ruta POST para manejar el formulario enviado
     app.post("/loggin", passport_1.default.authenticate("local", {
         failureRedirect: "/loggin?failed=1", // Caso fallido
-    }), async (req, res) => {
+    }), async (req, res, next) => {
         try {
             const username = req.body.username; // El nombre de usuario del usuario autenticado (esto depende de cómo hayas configurado passport)
             // Verificar si es un usuario normal o administrador
@@ -49,10 +51,12 @@ const registerFormRoutesUser = (app) => {
             if (isUser) {
                 // Si es un usuario, redirigir a la interfaz de usuario
                 res.render("menuUser");
+                next();
             }
             else {
                 // Si no es un usuario (es decir, es un administrador), redirigir a la interfaz de administrador
                 res.render("menuAdmin");
+                next();
             }
         }
         catch (error) {
@@ -63,19 +67,15 @@ const registerFormRoutesUser = (app) => {
     app.get("/menu", (req, res) => {
         res.render("menu");
     });
-    app.get("/menuAdmin", (req, res) => {
-        // Verifica que el usuario esté autenticado antes de mostrar la página
-        // if (req.isAuthenticated()) {
-        //res.render("menuAdmin", { user: req.user });
-        res.render("menuAdmin");
-        // }
-    });
-    app.get("/menuUser", (req, res) => {
-        // Verifica que el usuario esté autenticado antes de mostrar la página
-        // if (req.isAuthenticated()) {
-        //
-        res.render("menuUser");
-        // }
+    app.get("/menuUser", async (req, res) => {
+        const boolUser = req.session.user?.role;
+        const authtenticated = req.authenticated;
+        if (boolUser && authtenticated) {
+            res.render("menuUser");
+        }
+        else {
+            res.render("unauthorized");
+        }
     });
     app.get("/myProfile", async (req, res) => {
         const username = req.session.user?.username; // Recupera el usuario de la sesión
@@ -84,17 +84,20 @@ const registerFormRoutesUser = (app) => {
             res.render("myProfile", { user });
         }
         else {
-            res.status(401).send("Usuario no autenticado"); // Maneja el caso en el que no hay un usuario
+            res.render("unauthorized");
         }
     });
-    app.get("/editUser", (req, res) => {
-        res.render("editUser");
-    });
-    app.post("/editUser", (req, res) => {
+    app.post("/myProfile", (req, res) => {
         res.render("updateProfile");
     });
     app.get("/updateProfile", (req, res) => {
-        res.render("updateProfile");
+        const authtenticated = req.authenticated;
+        if (authtenticated) {
+            res.render("updateProfile");
+        }
+        else {
+            res.render("unauthorized");
+        }
     });
     app.post("/updateProfile", (0, validation_1.validate)("name").required().minLength(2).isText(), (0, validation_1.validate)("lastname").required().isText().minLength(2), (0, validation_1.validate)("username").required(), (0, validation_1.validate)("password").required(), (0, validation_1.validate)("email").required().isEmail(), (0, validation_1.validate)("card").required().minLength(16).maxLength(19), (0, validation_1.validate)("cvv").required().minLength(3).maxLength(4), (0, validation_1.validate)("expM").required().greaterThan(0).lessThan(13), (0, validation_1.validate)("expY").required().greaterThan(2024), (0, validation_1.validate)("cardholder").required().isText(), async (req, res) => {
         const validation = (0, validation_1.getValidationResults)(req);
@@ -149,10 +152,17 @@ const registerFormRoutesUser = (app) => {
         res.render("places", { places: plainPlaces }); // Pasar los objetos planos a la plantilla
     });
     app.get("/reserve/:id", async (req, res) => {
-        const { id } = req.params;
-        const hoy = new Date().toISOString().split('T')[0]; // Obtener fecha actual en formato YYYY-MM-DD
-        console.log(hoy);
-        res.render("reserve", { id, hoy });
+        const boolUser = req.session.user?.role;
+        const authtenticated = req.authenticated;
+        if (boolUser && authtenticated) {
+            const { id } = req.params;
+            const hoy = new Date().toISOString().split('T')[0]; // Obtener fecha actual en formato YYYY-MM-DD
+            console.log(hoy);
+            res.render("reserve", { id, hoy });
+        }
+        else {
+            res.render("unauthorized");
+        }
     });
     app.post("/reserve/:id", async (req, res) => {
         const { id } = req.params; // Recupera el parámetro id como cadena
@@ -177,34 +187,51 @@ const registerFormRoutesUser = (app) => {
         }
     });
     app.get("/reservations", async (req, res) => {
-        try {
-            const username = req.session?.user?.username; // Asegúrate de que estás guardando el username en la sesión
-            if (!username) {
-                return res.status(401).send({ success: false, message: "Usuario no autenticado" });
+        const boolUser = req.session.user?.role;
+        const authtenticated = req.authenticated;
+        if (boolUser && authtenticated) {
+            try {
+                const username = req.session?.user?.username; // Asegúrate de que estás guardando el username en la sesión
+                if (!username) {
+                    return res.status(401).send({ success: false, message: "Usuario no autenticado" });
+                }
+                const bookingsR = await store.viewBookingsUser(username);
+                res.render("reservations", { bookingsR });
             }
-            const bookingsR = await store.viewBookingsUser(username);
-            res.render("reservations", { bookingsR });
+            catch (error) {
+                console.error("Error al obtener las reservas:", error);
+                res.status(500).send({ success: false, message: "Error interno del servidor" });
+            }
         }
-        catch (error) {
-            console.error("Error al obtener las reservas:", error);
-            res.status(500).send({ success: false, message: "Error interno del servidor" });
+        else {
+            res.render("unauthorized");
         }
     });
     app.delete("/cancel-reservation/:id", async (req, res) => {
-        try {
-            const { id } = req.params;
-            const deletedRows = await store.deleteBooking(Number(id));
-            if (deletedRows > 0) {
-                res.status(200).send({ success: true, message: "Reserva cancelada." });
+        const boolUser = req.session.user?.role;
+        const authtenticated = req.authenticated;
+        if (boolUser && authtenticated) {
+            try {
+                const { id } = req.params;
+                const deletedRows = await store.deleteBooking(Number(id));
+                if (deletedRows > 0) {
+                    res.status(200).send({ success: true, message: "Reserva cancelada." });
+                }
+                else {
+                    res.status(404).send({ success: false, message: "Reserva no encontrada." });
+                }
             }
-            else {
-                res.status(404).send({ success: false, message: "Reserva no encontrada." });
+            catch (error) {
+                console.error("Error al cancelar la reserva:", error);
+                res.status(500).send({ success: false, message: "Error interno del servidor." });
             }
         }
-        catch (error) {
-            console.error("Error al cancelar la reserva:", error);
-            res.status(500).send({ success: false, message: "Error interno del servidor." });
+        else {
+            res.render("unauthorized");
         }
+    });
+    app.get("/unauthorized", async (req, resp) => {
+        resp.render("unauthorized");
     });
     app.get('/logout', (req, res) => {
         req.session.destroy(err => {
@@ -213,6 +240,27 @@ const registerFormRoutesUser = (app) => {
             }
             res.redirect("/");
         });
+    });
+    //admins
+    app.get("/allReservations", (req, res) => {
+        const boolUser = req.session.user?.role;
+        const authtenticated = req.authenticated;
+        if (!boolUser && authtenticated) {
+            res.render("allReservations");
+        }
+        else {
+            res.render("unauthorized");
+        }
+    });
+    app.get("/menuAdmin", async (req, res) => {
+        const boolUser = req.session.user?.role;
+        const authtenticated = req.authenticated;
+        if (!boolUser && authtenticated) {
+            res.render("menuAdmin");
+        }
+        else {
+            res.render("unauthorized");
+        }
     });
 };
 exports.registerFormRoutesUser = registerFormRoutesUser;
@@ -231,7 +279,7 @@ const roleGuard = (role) => {
             resp.redirect("/unauthorized");
         }
         else { //en caso de no haber sido autenticado
-            resp.redirect("/signin");
+            resp.redirect("/");
         }
     };
 };
