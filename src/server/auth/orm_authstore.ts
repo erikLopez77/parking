@@ -1,4 +1,4 @@
-import { Sequelize, Op } from "sequelize";
+import { Sequelize, Op, where } from "sequelize";
 import { User, initializeAuthModels, RoleModel, Place, Booking }
     from "./orm_auth_models";
 import { AuthStore, Role } from "./auth_types";
@@ -21,9 +21,9 @@ export class OrmAuthStore implements AuthStore {
         await this.storeOrUpdateUser("Erik", "Espinosa Lopez",
             "ErikLopez", "1234", "espinozalopezerik@gmail.com", "55799123412341234", 123, 10, 2031, "Erik Lopez");
         await this.storeOrUpdateUser("Alice", "Lance",
-            "alice", "mysecret", "alice@gmail.com", "5579111122223333", 113, 10, 2031, "Alice Lance");
+            "Alice", "mysecret", "alice@gmail.com", "5579111122223333", 113, 10, 2031, "Alice Lance");
         await this.storeOrUpdateUser("Bob", "Peterson",
-            "bob", "mysecret", "bob@gmail.com", "5579444433332222", 321, 8, 2030, "Bob Peterson");
+            "Bob", "mysecret", "bob@gmail.com", "5579444433332222", 321, 8, 2030, "Bob Peterson");
         await this.storeOrUpdateRole({
             name: "Admins", members: ["ErikLopez", "Alice"]
         });
@@ -94,7 +94,6 @@ export class OrmAuthStore implements AuthStore {
         }
         return []; // Devolver una lista vacía si no se encuentra el rol
     }
-
     async storeOrUpdateUser(name: string, lastname: string, username: string, password: string, email: string, card: string, cvv: number, expM: number, expY: number, cardholder: string) {
         const salt = randomBytes(16); //se genera salt
         const hashedPassword = await this.createHashCode(password, salt);//se hashea password

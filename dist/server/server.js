@@ -35,7 +35,11 @@ expressApp.use((0, express_session_1.default)({
 }));
 expressApp.use(passport_1.default.initialize());
 (0, rutasUser_1.registerFormRoutesUser)(expressApp);
-expressApp.use(express_1.default.static("static"));
+expressApp.use(express_1.default.static("/static"));
+expressApp.get('/static/styles.css', (req, res) => {
+    res.type('application/css');
+    res.sendFile(path_1.default.join(__dirname, '/static/styles.css'));
+});
 //static file
 expressApp.use(express_1.default.static('src/client'));
 expressApp.get('/src/client/reserve.js', (req, res) => {
@@ -44,7 +48,7 @@ expressApp.get('/src/client/reserve.js', (req, res) => {
 });
 //scripts externos
 expressApp.use((req, res, next) => {
-    res.setHeader("Content-Security-Policy", "script-src 'self';");
+    res.setHeader("Content-Security-Policy", "script-src 'self' https://cdn.jsdelivr.net;");
     next();
 });
 expressApp.use(express_1.default.static("node_modules/bootstrap/dist"));

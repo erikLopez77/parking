@@ -1,3 +1,4 @@
+<script type="module" src="/client.js"></script>
 <main
     style="font-family: Arial, sans-serif; margin: 20px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
     <h1 style="text-align: center; color: #333;">Tus Reservas</h1>
@@ -23,27 +24,3 @@
         {{/unless}}
     </ul>
 </main>
-<script src="/client.js"></script>
-{{!--
-<script>
-    // Función para cancelar una reserva
-    function cancelBooking(bookingId) {
-        if (confirm("¿Estás seguro de que deseas cancelar esta reserva?")) {
-            fetch(`/cancel-reservation/${bookingId}`, {
-                method: 'DELETE',
-            });
-                .then(response => {
-                if (response.ok) {
-                    alert("Reserva cancelada con éxito.");
-                    window.location.reload(); // Recargar la página para actualizar la lista
-                } else {
-                    alert("Hubo un problema al cancelar la reserva.");
-                }
-            })
-                .catch(error => {
-                    console.error("Error al cancelar la reserva:", error);
-                    alert("Ocurrió un error al procesar la solicitud.");
-                });
-        }
-    }
-</script> --}}

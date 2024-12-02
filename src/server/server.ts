@@ -33,7 +33,11 @@ expressApp.use(session({
 }));
 expressApp.use(passport.initialize());
 registerFormRoutesUser(expressApp);
-expressApp.use(express.static("static"));
+expressApp.use(express.static("/static"));
+expressApp.get('/static/styles.css', (req, res) => {//tipos MIME
+    res.type('application/css');
+    res.sendFile(path.join(__dirname, '/static/styles.css'));
+});
 //static file
 expressApp.use(express.static('src/client'));
 expressApp.get('/src/client/reserve.js', (req, res) => {//tipos MIME
@@ -44,7 +48,7 @@ expressApp.get('/src/client/reserve.js', (req, res) => {//tipos MIME
 expressApp.use((req, res, next) => {
     res.setHeader(
         "Content-Security-Policy",
-        "script-src 'self';"
+        "script-src 'self' https://cdn.jsdelivr.net;"
     );
     next();
 });

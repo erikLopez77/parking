@@ -1,5 +1,4 @@
 import Swal from 'sweetalert2';
-
 document.addEventListener('DOMContentLoaded', () => {
     //p vista Save User
     const formsaveU = document.querySelector('#saveUser');
@@ -31,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: 'El usuario no se pudo crear. Por favor, revisa los datos.',
+                        text: 'El usuario no se pudo crear. Por favor, revisa los datos o cambia tu nombre de usuario. ',
                         icon: 'error',
                         confirmButtonText: 'Aceptar',
                     }).then(() => {

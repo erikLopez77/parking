@@ -6,6 +6,7 @@ import passport from "passport";
 import { configurePassport, isAuthenticated } from "./auth/passport_config";
 import { getValidationResults, validate } from "./validator/validation";
 import { Place, Booking } from "./auth/orm_auth_models";
+import { userInfo } from "os";
 
 const jwt_secret = "mytokensecret";
 const store: AuthStore = new OrmAuthStore();
@@ -114,7 +115,6 @@ export const registerFormRoutesUser = (app: Express) => {
     });
     app.post("/updateProfile", validate("name").required().minLength(2).isText(),
         validate("lastname").required().isText().minLength(2),
-        validate("username").required(),
         validate("password").required(),
         validate("email").required().isEmail(),
         validate("card").required().minLength(16).maxLength(19),
@@ -124,11 +124,12 @@ export const registerFormRoutesUser = (app: Express) => {
         validate("cardholder").required().isText(),
         async (req, res) => {
             const validation = getValidationResults(req);
-            if (validation.valid) {
+            const current = req.session.user?.username;
+            if (validation.valid && current) {
                 try {
                     const user = req.body;
                     // Almacena el usuario en la base de datos usando `store`
-                    const model = await store.storeOrUpdateUser(user.name, user.lastname, user.username, user.password, user.email, user.card, user.cvv, user.expM, user.expY, user.cardholder); // Método ficticio, ajusta según tu implementación
+                    const model = await store.storeOrUpdateUser(user.name, user.lastname, current, user.password, user.email, user.card, user.cvv, user.expM, user.expY, user.cardholder); // Método ficticio, ajusta según tu implementación
                     res.status(200).json({ success: true });
                     // res.json({ success: true, redirect: "/loggin" }); // Redirige al login después del registro
                 } catch (error) {
@@ -155,8 +156,10 @@ export const registerFormRoutesUser = (app: Express) => {
         validate("expY").required().greaterThan(2024),
         validate("cardholder").required().isText(),
         async (req, res) => {
+            const user = req.body.username;
+            const userExists = await store.userExists(user);
             const validation = getValidationResults(req);
-            if (validation.valid) {
+            if (validation.valid && !userExists) {
                 try {
                     const user = req.body;
                     // Almacena el usuario en la base de datos usando `store`
@@ -292,24 +295,4 @@ export const registerFormRoutesUser = (app: Express) => {
             res.render("unauthorized");
         }
     });
-}
-
-//acepta rol y devuelve un componente middleware que pasará soli al controlador
-//si el usuario está asignado a ese rol (validateMembership)
-export const roleGuard = (role: string)
-    : RequestHandler<Request, Response, NextFunction> => {
-    return async (req, resp, next) => {
-        if (req.authenticated) {//verifica si el usuario está autenticado , authenticated está en passport
-            const username = req.user?.username;//obtiene el nombre del ususario
-            if (username != undefined
-                //valida el username y el rol, vM en ormauthstore
-                && await store.validateMembership(username, role)) {
-                next();//si tiene el rol requerido, permite el acceso
-                return;
-            }//p/ soli autenticadas, pero no autorizadas
-            resp.redirect("/unauthorized");
-        } else {//en caso de no haber sido autenticado
-            resp.redirect("/");
-        }
-    }
 }
