@@ -228,6 +228,7 @@ export const registerFormRoutesUser = (app: Express) => {
                     return res.status(401).send({ success: false, message: "Usuario no autenticado" });
                 }
                 const bookingsR = await store.viewBookingsUser(username);
+                console.log(bookingsR);
                 res.render("reservations", { bookingsR });
             } catch (error) {
                 console.error("Error al obtener las reservas:", error);
@@ -271,11 +272,13 @@ export const registerFormRoutesUser = (app: Express) => {
         });
     });
     //admins
-    app.get("/allReservations", (req, res) => {
+    app.get("/allReservations", async (req, res) => {
         const boolUser = req.session.user?.role;
         const authtenticated = req.authenticated;
         if (!boolUser && authtenticated) {
-            res.render("allReservations");
+            const bookings = await store.viewBookings();
+            console.log(bookings);
+            res.render("allReservations", { bookings });
         } else {
             res.render("unauthorized");
         }

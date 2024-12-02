@@ -23,10 +23,10 @@ class OrmAuthStore {
         await this.storeOrUpdateUser("Alice", "Lance", "alice", "mysecret", "alice@gmail.com", "5579111122223333", 113, 10, 2031, "Alice Lance");
         await this.storeOrUpdateUser("Bob", "Peterson", "bob", "mysecret", "bob@gmail.com", "5579444433332222", 321, 8, 2030, "Bob Peterson");
         await this.storeOrUpdateRole({
-            name: "Admins", members: ["ErikLopez", "alice"]
+            name: "Admins", members: ["ErikLopez", "Alice"]
         });
         await this.storeOrUpdateRole({
-            name: "Users", members: ["bob"]
+            name: "Users", members: ["Bob"]
         });
         await this.initPlaces();
     }
@@ -207,13 +207,21 @@ class OrmAuthStore {
         }
     }
     async viewBookings() {
-        const bookings = await orm_auth_models_1.Booking.findAll();
+        const bookings = await orm_auth_models_1.Booking.findAll({
+            include: [
+                {
+                    model: orm_auth_models_1.Place,
+                    as: 'place',
+                    attributes: ['suburb', 'entry', 'exit']
+                }
+            ]
+        });
         return bookings.map(booking => booking.get({ plain: true }));
     }
     async viewBookingsUser(username) {
         const bookings = await orm_auth_models_1.Booking.findAll({
             where: { userPk: username },
-            attributes: ['id'],
+            attributes: ['id', 'date'],
             include: [
                 {
                     model: orm_auth_models_1.Place,

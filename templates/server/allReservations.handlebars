@@ -1,3 +1,22 @@
-<main>
-    Reservciones en general p/Admins
+<main
+    style="font-family: Arial, sans-serif; margin: 20px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    <h1 style="text-align: center; color: #333;">Tus Reservas</h1>
+    <ul style="list-style-type: none; padding: 0;">
+        {{#each bookings}}
+        <li
+            style="background-color: #fff; margin: 10px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p style="margin: 0;"><strong>Nombre de usuario:</strong> {{userPk}}</p>
+                <p style="margin: 0;"><strong>Fecha:</strong> {{date}}</p>
+                <p style="margin: 0;"><strong>Colonia:</strong> {{place.suburb}}</p>
+                <p style="margin: 0;"><strong>Entrada:</strong> {{place.entry}}</p>
+                <p style="margin: 0;"><strong>Salida:</strong> {{place.exit}}</p>
+            </div>
+        </li>
+        {{/each}}
+
+        {{#unless bookings.length}}
+        <p style="text-align: center; color: #666;">Por el momento no hay reservaciones.</p>
+        {{/unless}}
+    </ul>
 </main>

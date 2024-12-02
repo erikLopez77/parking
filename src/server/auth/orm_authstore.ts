@@ -25,10 +25,10 @@ export class OrmAuthStore implements AuthStore {
         await this.storeOrUpdateUser("Bob", "Peterson",
             "bob", "mysecret", "bob@gmail.com", "5579444433332222", 321, 8, 2030, "Bob Peterson");
         await this.storeOrUpdateRole({
-            name: "Admins", members: ["ErikLopez", "alice"]
+            name: "Admins", members: ["ErikLopez", "Alice"]
         });
         await this.storeOrUpdateRole({
-            name: "Users", members: ["bob"]
+            name: "Users", members: ["Bob"]
         });
         await this.initPlaces();
 
@@ -133,6 +133,7 @@ export class OrmAuthStore implements AuthStore {
             return true;
         return false;
     }
+
     async getRole(name: string) {
         const stored = await RoleModel.findByPk(name, {
             //datos asociados al modelo de credenciales, prop.del  modelo que se completarán en el resultado
@@ -222,14 +223,22 @@ export class OrmAuthStore implements AuthStore {
         }
     }
     async viewBookings(): Promise<Record<string, any>[]> {
-        const bookings = await Booking.findAll();
+        const bookings = await Booking.findAll({
+            include: [
+                {
+                    model: Place,
+                    as: 'place',
+                    attributes: ['suburb', 'entry', 'exit']
+                }
+            ]
+        });
         return bookings.map(booking => booking.get({ plain: true }));
     }
 
     async viewBookingsUser(username: string): Promise<Record<string, any>[]> {
         const bookings = await Booking.findAll({
             where: { userPk: username }, // Filtrar por el usuario
-            attributes: ['id'], // Incluye explícitamente el campo `id` del modelo Booking
+            attributes: ['id', 'date'], // Incluye explícitamente el campo `id` del modelo Booking
             include: [
                 {
                     model: Place,
