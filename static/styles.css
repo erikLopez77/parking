@@ -29,10 +29,13 @@
  }
 
  .card-body {
-    background-color: #343a40; /* Gris suave */
-    border-radius: 10px; /* Mantén los bordes redondeados */
-    color: #7e8994; /* Texto en gris oscuro para contraste */
-  }
+     background-color: #4c4f53;
+     /* Gris suave */
+     border-radius: 10px;
+     /* Mantén los bordes redondeados */
+     color: #7e8994;
+     /* Texto en gris oscuro para contraste */
+ }
 
 
  .shadow-lg {
@@ -48,7 +51,9 @@
  .btn-primary:hover {
      background-color: #187bcd;
      border-color: #187bcd;
- }/*style="background-color: #187bcd; border-color: #1167b1;"*/
+ }
+
+ /*style="background-color: #187bcd; border-color: #1167b1;"*/
 
  .btn-secondary {
      background-color: #2a9df4;

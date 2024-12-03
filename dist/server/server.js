@@ -53,7 +53,7 @@ expressApp.use((req, res, next) => {
 });
 expressApp.use(express_1.default.static("node_modules/bootstrap/dist"));
 //use agrega middleware redirige req a la url de target, no Sockets
-expressApp.use("^/$", (req, resp) => resp.redirect("/loggin"));
+expressApp.use("^/$", (req, resp) => resp.redirect("/menu"));
 expressApp.use((req, resp) => proxy.web(req, resp));
 const server = (0, http_1.createServer)(expressApp);
 //se activa una req de upgrade, redirecciona a webSockets

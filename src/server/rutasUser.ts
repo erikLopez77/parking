@@ -41,6 +41,9 @@ export const registerFormRoutesUser = (app: Express) => {
         }
         next();
     });
+    app.get("/politics", (req, res) => {
+        res.render("politics");
+    });
 
     app.get("/loggin", (req, res) => {
         const data = {
