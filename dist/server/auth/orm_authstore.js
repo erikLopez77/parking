@@ -178,6 +178,27 @@ class OrmAuthStore {
         console.log(places.map(p => p.suburb));
         return places;
     }
+    async updatePlace(id, entry, exit, cost) {
+        try {
+            // Busca el lugar por id
+            const place = await orm_auth_models_1.Place.findByPk(id);
+            if (!place) {
+                throw new Error(`No se encontró un lugar con el id ${id}`);
+            }
+            // Actualiza los campos necesarios
+            await place.update({
+                entry,
+                exit,
+                cost
+            });
+            console.log(`Lugar con id ${id} actualizado exitosamente.`);
+            return place; // Devuelve el lugar actualizado si es necesario
+        }
+        catch (error) {
+            console.error("Error al actualizar el lugar:", error);
+            throw error;
+        }
+    }
     //BOOKINGS
     async storeBookings(date, placeId, username) {
         try {

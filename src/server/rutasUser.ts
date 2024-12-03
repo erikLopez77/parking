@@ -3,10 +3,9 @@ import { Express, NextFunction, Request, RequestHandler, Response } from "expres
 import { AuthStore } from "./auth/auth_types";
 import { OrmAuthStore } from "./auth/orm_authstore";
 import passport from "passport";
-import { configurePassport, isAuthenticated } from "./auth/passport_config";
+import { configurePassport } from "./auth/passport_config";
 import { getValidationResults, validate } from "./validator/validation";
 import { Place, Booking } from "./auth/orm_auth_models";
-import { userInfo } from "os";
 
 const jwt_secret = "mytokensecret";
 const store: AuthStore = new OrmAuthStore();
@@ -247,16 +246,19 @@ export const registerFormRoutesUser = (app: Express) => {
         if (boolUser && authtenticated) {
             try {
                 const { id } = req.params;
-                const deletedRows = await store.deleteBooking(Number(id));
-
-                if (deletedRows > 0) {
-                    res.status(200).send({ success: true, message: "Reserva cancelada." });
-                } else {
-                    res.status(404).send({ success: false, message: "Reserva no encontrada." });
+                const numericId = parseInt(id, 10);
+                const { entry, exit, cost } = req.body;
+                // Verifica que el lugar exista
+                const place = await Place.findByPk(numericId);
+                if (!place) {
+                    return res.status(404).json({ success: false, message: "Lugar no encontrado." });
                 }
+                // Actualiza los datos del lugar
+                await place.update({ entry, exit, cost });
+                return res.status(200).json({ success: true, message: "Lugar actualizado exitosamente." });
             } catch (error) {
-                console.error("Error al cancelar la reserva:", error);
-                res.status(500).send({ success: false, message: "Error interno del servidor." });
+                console.error("Error al actualizar el lugar:", error);
+                return res.status(500).json({ success: false, message: "Ocurrió un error en el servidor." });
             }
         } else {
             res.render("unauthorized");
@@ -295,4 +297,66 @@ export const registerFormRoutesUser = (app: Express) => {
             res.render("unauthorized");
         }
     });
+
+    app.get("/selectPlaces", async (req, res) => {
+        const boolUser = req.session.user?.role;
+        const authtenticated = req.authenticated;
+        if (!boolUser && authtenticated) {
+            const places = await Place.findAll();
+            const plainPlaces = places.map(place => place.get({ plain: true }));  // Convertir a objetos planos
+            res.render("selectPlaces", { places: plainPlaces }); // Pasar los objetos planos a la plantilla
+        } else {
+            res.render("unauthorized");
+        }
+    });
+    //editar lugar
+    app.get("/updatePlace/:id", async (req, res) => {
+        try {
+            const boolUser = req.session.user?.role;
+            const authenticated = req.authenticated;
+
+            if (!boolUser && authenticated) {
+                const { id } = req.params; // Recupera el parámetro id como cadena
+                const numericId = parseInt(id, 10);
+
+                const place = await Place.findByPk(numericId); // Devuelve un solo lugar o null
+                if (!place) {
+                    return res.status(404).send("Lugar no encontrado.");
+                }
+
+                const plainPlace = place.get({ plain: true }); // Convertir el lugar a objeto plano
+                return res.render("updatePlace", { place: plainPlace }); // Pasar el lugar a la plantilla
+            } else {
+                return res.render("unauthorized");
+            }
+        } catch (error) {
+            console.error("Error al cargar el lugar:", error);
+            return res.status(500).send("Ocurrió un error al cargar el lugar.");
+        }
+    });
+
+    app.post("/updatePlace/:id", async (req, res) => {
+        try {
+            const { id } = req.params; // Recupera el parámetro id
+            const numericId = parseInt(id, 10);
+            const { entry, exit, cost } = req.body;
+
+            console.log("Datos recibidos para actualizar:", { numericId, entry, exit, cost });
+
+            const place = await store.updatePlace(numericId, entry, exit, cost); // Actualiza el lugar
+
+            if (!place) {
+                return res.status(404).json({ success: false, message: "Lugar no encontrado." });
+            }
+
+            return res.status(200).json({ success: true, message: "Lugar actualizado exitosamente." });
+        } catch (error) {
+            console.error("Error al actualizar el lugar:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Ocurrió un error al actualizar el lugar.",
+            });
+        }
+    });
+
 }

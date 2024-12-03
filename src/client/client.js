@@ -171,7 +171,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+    }//updateFormplace
+    const updatePlace = document.querySelector('#updatePlace');
+    if (updatePlace) {
+        updatePlace.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evita el comportamiento por defecto del formulario.
+
+            const placeId = updatePlace.getAttribute('data-id'); // Obtén el ID desde el atributo data-id
+            const form = new FormData(updatePlace);
+            const data = Object.fromEntries(form.entries()); // Convierte los datos del formulario en un objeto
+
+            try {
+                const response = await fetch(`/updatePlace/${placeId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+
+                if (!response.ok) {
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage); // Lanza el mensaje de error del servidor
+                }
+
+                const message = await response.json();
+                if (message.success) {
+                    Swal.fire({
+                        title: '¡Éxito!',
+                        text: message.message,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                    }).then(() => {
+                        window.location.href = "/selectPlaces"; // Redirige después del éxito
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: message.message || 'No se pudo actualizar el lugar.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                    });
+                }
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire({
+                    title: 'Error inesperado',
+                    text: 'Hubo un problema en el servidor. Por favor, inténtalo más tarde.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                });
+            }
+        });
     }
-
-
 });

@@ -39,4 +39,5 @@ export interface AuthStore {
     viewBookings(): Promise<booking[] | null>;
     viewBookingsUser(username: string): Promise<Record<string, any>[]>;
     deleteBooking(id: number): Promise<number>;
+    updatePlace(id: number, entry: string, exit: string, cost: number): Promise<Place>
 }

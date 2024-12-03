@@ -1,0 +1,36 @@
+<main class="bg-white py-5">
+    <script type="module" src="/client.js"></script>
+    <div class="container">
+        <h1 class="text-center mb-5 text-dark">Editar lugar</h1>
+        <form method="post" id="updatePlace" data-id="{{place.id}}" action="/updatePlace/{{place.id}}">
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body text-white">
+                            <h2 class="card-title fs-5 text-warning">Lugar: {{place.suburb}}</h2>
+                            <p class="card-text">
+                                <strong>Calle:</strong> {{place.street}} No. {{place.numberS}}
+                            </p>
+                            <div class="mb-3">
+                                <input type="text" placeholder="Nuevo precio de lugar estacionamiento" name="cost"
+                                    class="form-control" value="{{place.cost}}" />
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" placeholder="Hora de entrada" name="entry" class="form-control"
+                                    value="{{place.entry}}" />
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" placeholder="Hora de salida" name="exit" class="form-control"
+                                    value="{{place.exit}}" />
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mt-3"
+                                style="background-color: #187bcd; border-color: #1167b1;">
+                                Actualizar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
