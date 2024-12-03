@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault(); // Evita el comportamiento por defecto del formulario.
             const form = new FormData(formUpdate);
             const data = Object.fromEntries(form.entries()); // Convierte los datos del formulario en un objeto.
+            console.log("formulario", data);
             try {
                 const response = await fetch('/updateProfile', {
                     method: 'POST',

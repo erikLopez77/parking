@@ -12,11 +12,6 @@ export class User extends Model<InferAttributes<User>,
     declare hashedPassword: Buffer;
     declare salt: Buffer;
     declare email: string;
-    declare card: string;
-    declare cvv: number;
-    declare expM: number;
-    declare expY: number;
-    declare cardholder: string;
     declare RoleModels?: InferAttributes<RoleModel>[];//array de  roleModel para tener relacion
 }
 export class Booking extends Model<InferAttributes<Booking>,
@@ -58,11 +53,6 @@ export const initializeAuthModels = (sequelize: Sequelize) => {
         hashedPassword: { type: DataTypes.BLOB },
         salt: { type: DataTypes.BLOB },
         email: { type: DataTypes.STRING },
-        card: { type: DataTypes.STRING },
-        cvv: { type: DataTypes.NUMBER, validate: { min: 100, max: 999 } },
-        expM: { type: DataTypes.NUMBER, validate: { min: 1, max: 12 } },
-        expY: { type: DataTypes.NUMBER, validate: { min: 2024 } },
-        cardholder: { type: DataTypes.STRING },
     }, { sequelize });
 
     RoleModel.init({

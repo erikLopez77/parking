@@ -119,19 +119,15 @@ export const registerFormRoutesUser = (app: Express) => {
         validate("lastname").required().isText().minLength(2),
         validate("password").required(),
         validate("email").required().isEmail(),
-        validate("card").required().minLength(16).maxLength(19),
-        validate("cvv").required().minLength(3).maxLength(4),
-        validate("expM").required().greaterThan(0).lessThan(13),
-        validate("expY").required().greaterThan(2024),
-        validate("cardholder").required().isText(),
         async (req, res) => {
             const validation = getValidationResults(req);
             const current = req.session.user?.username;
             if (validation.valid && current) {
                 try {
                     const user = req.body;
+                    console.log(user);
                     // Almacena el usuario en la base de datos usando `store`
-                    const model = await store.storeOrUpdateUser(user.name, user.lastname, current, user.password, user.email, user.card, user.cvv, user.expM, user.expY, user.cardholder); // Método ficticio, ajusta según tu implementación
+                    const model = await store.storeOrUpdateUser(user.name, user.lastname, current, user.password, user.email); // Método ficticio, ajusta según tu implementación
                     res.status(200).json({ success: true });
                     // res.json({ success: true, redirect: "/loggin" }); // Redirige al login después del registro
                 } catch (error) {
@@ -152,11 +148,6 @@ export const registerFormRoutesUser = (app: Express) => {
         validate("username").required(),
         validate("password").required(),
         validate("email").required().isEmail(),
-        validate("card").required().minLength(16).maxLength(19),
-        validate("cvv").required().minLength(3).maxLength(4),
-        validate("expM").required().greaterThan(0).lessThan(13),
-        validate("expY").required().greaterThan(2024),
-        validate("cardholder").required().isText(),
         async (req, res) => {
             const user = req.body.username;
             const userExists = await store.userExists(user);
@@ -165,7 +156,7 @@ export const registerFormRoutesUser = (app: Express) => {
                 try {
                     const user = req.body;
                     // Almacena el usuario en la base de datos usando `store`
-                    const model = await store.storeOrUpdateUser(user.name, user.lastname, user.username, user.password, user.email, user.card, user.cvv, user.expM, user.expY, user.cardholder); // Método ficticio, ajusta según tu implementación
+                    const model = await store.storeOrUpdateUser(user.name, user.lastname, user.username, user.password, user.email); // Método ficticio, ajusta según tu implementación
                     const usersM = await store.getRoleMembers("Users");
                     usersM.push(model.username);
                     console.log(usersM);

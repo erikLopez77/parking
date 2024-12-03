@@ -19,9 +19,9 @@ class OrmAuthStore {
         (0, orm_auth_models_1.initializeAuthModels)(this.sequelize);
         await this.sequelize.drop();
         await this.sequelize.sync();
-        await this.storeOrUpdateUser("Erik", "Espinosa Lopez", "ErikLopez", "1234", "espinozalopezerik@gmail.com", "55799123412341234", 123, 10, 2031, "Erik Lopez");
-        await this.storeOrUpdateUser("Alice", "Lance", "Alice", "mysecret", "alice@gmail.com", "5579111122223333", 113, 10, 2031, "Alice Lance");
-        await this.storeOrUpdateUser("Bob", "Peterson", "Bob", "mysecret", "bob@gmail.com", "5579444433332222", 321, 8, 2030, "Bob Peterson");
+        await this.storeOrUpdateUser("Erik", "Espinosa Lopez", "ErikLopez", "1234", "espinozalopezerik@gmail.com");
+        await this.storeOrUpdateUser("Alice", "Lance", "Alice", "mysecret", "alice@gmail.com");
+        await this.storeOrUpdateUser("Bob", "Peterson", "Bob", "mysecret", "bob@gmail.com");
         await this.storeOrUpdateRole({
             name: "Admins", members: ["ErikLopez", "Alice"]
         });
@@ -81,11 +81,11 @@ class OrmAuthStore {
         }
         return []; // Devolver una lista vacía si no se encuentra el rol
     }
-    async storeOrUpdateUser(name, lastname, username, password, email, card, cvv, expM, expY, cardholder) {
+    async storeOrUpdateUser(name, lastname, username, password, email) {
         const salt = (0, crypto_1.randomBytes)(16); //se genera salt
         const hashedPassword = await this.createHashCode(password, salt); //se hashea password
         const [model] = await orm_auth_models_1.User.upsert({
-            name, lastname, username, hashedPassword, salt, email, card, cvv, expM, expY, cardholder //inserta o actualiza usuario
+            name, lastname, username, hashedPassword, salt, email //inserta o actualiza usuario
         });
         return model; //modelo creado o actualizado
     }
