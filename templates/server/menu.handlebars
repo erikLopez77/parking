@@ -1,16 +1,133 @@
 <main
     style="font-family: Arial, sans-serif; margin: 20px; padding: 20px; text-align: center; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-    <h1 style="color: #03254c;">¡Bienvenido a Parking express!</h1>
+    <h1 style="color: #03254c; font-size: 36px; font-weight: 700;">¡Bienvenido a Parking Express!</h1>
     <p style="color: #333; font-size: 18px; margin: 20px 0;">
         Somos una empresa en crecimiento, comprometida con brindarte una experiencia segura y conveniente para
-        estacionar tu vehículo en Puebla.
-        Estamos empezando este emocionante viaje y queremos que formes parte de él.
+        estacionar tu vehículo en Puebla. Estamos empezando este emocionante viaje y queremos que formes parte de él.
     </p>
+
     <p style="color: #333; font-size: 16px; margin: 20px 0;">
         Regístrate hoy y disfruta de una manera más práctica de gestionar tus reservaciones de estacionamiento.
     </p>
-    <a href="/saveUser"
-        style="display: inline-block; background-color: #03254c; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 5px; font-size: 16px; margin-top: 20px;">
-        Crear Cuenta
-    </a>
+
+    <!-- Contenedor para el formulario centrado -->
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+        <div class="w-50 shadow-lg p-4 rounded" style="background-color: #f9f9f9;">
+            <h2 class="text-center mb-4" style="color: #1167b1;">Registrar Usuario</h2>
+            <form method="post" action="/saveUser" id="saveUser">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" placeholder="Nombre" name="name" class="form-control form-control-lg mb-2"
+                            value="{{name}}" />
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" placeholder="Apellidos" name="lastname" class="form-control form-control-lg"
+                            value="{{lastname}}" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input type="text" placeholder="Usuario" name="username" class="form-control form-control-lg"
+                        value="{{username}}" />
+                </div>
+                <div class="mb-3">
+                    <input type="password" placeholder="Contraseña" name="password" class="form-control form-control-lg"
+                        autocomplete="current-password" value="{{password}}" />
+                </div>
+                <div class="mb-3">
+                    <input type="email" placeholder="Correo" name="email" class="form-control form-control-lg"
+                        value="{{email}}" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100"
+                    style="background-color: #1167b1; border-color: #1167b1;">
+                    Guardar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sección de Tarjetas con Imágenes -->
+    <div class="container mt-5">
+        <div>
+            <h2>Información adicional</h2>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-4"> <!-- Dos filas, 2 tarjetas por fila -->
+            <!-- Card 1 con Imagen -->
+            <div class="col">
+                <div class="card border-light rounded">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="image1.jpg" alt="Imagen 1" class="img-fluid rounded-start" />
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: #1167b1;">Nuestro sitio web</h5>
+                                <p class="card-text" style="color: #fbfbfb;">
+                                    Fácil de usar, seguro y rápido.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 con Imagen -->
+            <div class="col">
+                <div class="card border-light rounded">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="image2.jpg" alt="Imagen 2" class="img-fluid rounded-start" />
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: #1167b1;">Elige el lugar</h5>
+                                <p class="card-text" style="color: #fbfbfb;">
+                                    Elige el estacionamiento que mejor se adecue a tus condiciones.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 con Imagen -->
+            <div class="col">
+                <div class="card border-light rounded">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="image3.jpg" alt="Imagen 3" class="img-fluid rounded-start" />
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: #1167b1;">Instalación y Servicios</h5>
+                                <p class="card-text" style="color: #fbfbfb;">
+                                    Instalación de los equipos y servicios contratados de Parking express.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4 con Imagen -->
+            <div class="col">
+                <div class="border-light rounded">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="image4.jpg" alt="Imagen 4" class="img-fluid rounded-start" />
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: #1167b1;">Comienza a controlar</h5>
+                                <p class="card-text" style="color: #fbfbfb;">
+                                    Comienza a controlar tu estacionamiento de manera segura, fácil y rápida.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/client.js"></script>
 </main>

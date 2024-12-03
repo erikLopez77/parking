@@ -28,6 +28,9 @@ const registerFormRoutesUser = (app) => {
         }
         next();
     });
+    app.get("/politics", (req, res) => {
+        res.render("politics");
+    });
     app.get("/loggin", (req, res) => {
         const data = {
             failed: req.query["failed"] ? true : false,
