@@ -33,9 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         text: 'El usuario no se pudo crear. Por favor, revisa los datos o cambia tu nombre de usuario. ',
                         icon: 'error',
                         confirmButtonText: 'Aceptar',
-                    }).then(() => {
-                        window.location.href = "/saveUser"; // Ajusta la URL según corresponda
-                    });
+                    })
                 }
             } catch (err) {
                 console.error(err);
@@ -82,9 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         text: 'El usuario no se pudo actualizar. Por favor, revisa los datos.',
                         icon: 'error',
                         confirmButtonText: 'Aceptar',
-                    }).then(() => {
-                        window.location.href = "/updateProfile"; // Ajusta la URL según corresponda
-                    });
+                    })
                 }
             } catch (err) {
                 console.error(err);
