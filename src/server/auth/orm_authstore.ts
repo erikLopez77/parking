@@ -35,27 +35,25 @@ export class OrmAuthStore implements AuthStore {
     }
     async initPlaces(): Promise<void> {
         const places = [
-            { entry: "08:00", exit: "18:00", suburb: "Centro", street: "16 de Septiembre", numberS: 101, cost: 50 },
-            { entry: "07:00", exit: "19:00", suburb: "La Paz", street: "Avenida Juárez", numberS: 202, cost: 60 },
-            { entry: "09:00", exit: "17:00", suburb: "Zavaleta", street: "Recta a Cholula", numberS: 303, cost: 55 },
-            { entry: "10:00", exit: "20:00", suburb: "Angelópolis", street: "Blvd. del Niño Poblano", numberS: 404, cost: 70 },
-            { entry: "06:30", exit: "15:30", suburb: "Centro", street: "5 de Mayo", numberS: 505, cost: 40 },
-            { entry: "08:15", exit: "18:45", suburb: "San Manuel", street: "Circuito Juan Pablo II", numberS: 606, cost: 65 },
-            { entry: "07:30", exit: "16:30", suburb: "Chapulco", street: "Blvd. Municipio Libre", numberS: 707, cost: 50 },
-            { entry: "09:45", exit: "18:15", suburb: "Los Fuertes", street: "Av. Ejército de Oriente", numberS: 808, cost: 60 },
-            { entry: "10:30", exit: "19:30", suburb: "Xilotzingo", street: "Blvd. Valsequillo", numberS: 909, cost: 55 },
-            { entry: "07:00", exit: "20:00", suburb: "El Mirador", street: "Av. 11 Sur", numberS: 1001, cost: 45 },
-            { entry: "06:00", exit: "14:00", suburb: "Analco", street: "2 Oriente", numberS: 150, cost: 35 },
-            { entry: "08:30", exit: "18:00", suburb: "San Francisco", street: "4 Norte", numberS: 220, cost: 50 },
-            { entry: "07:00", exit: "19:00", suburb: "El Carmen", street: "3 Poniente", numberS: 315, cost: 45 },
-            { entry: "09:00", exit: "17:30", suburb: "Huexotitla", street: "31 Oriente", numberS: 412, cost: 60 },
-            { entry: "07:45", exit: "20:00", suburb: "La Margarita", street: "Calle Margaritas", numberS: 523, cost: 40 },
+            { suburb: "Centro", street: "16 de Septiembre", numberS: 101, cost: 50 },
+            { suburb: "La Paz", street: "Avenida Juárez", numberS: 202, cost: 60 },
+            { suburb: "Zavaleta", street: "Recta a Cholula", numberS: 303, cost: 55 },
+            { suburb: "Angelópolis", street: "Blvd. del Niño Poblano", numberS: 404, cost: 70 },
+            { suburb: "Centro", street: "5 de Mayo", numberS: 505, cost: 40 },
+            { suburb: "San Manuel", street: "Circuito Juan Pablo II", numberS: 606, cost: 65 },
+            { suburb: "Chapulco", street: "Blvd. Municipio Libre", numberS: 707, cost: 50 },
+            { suburb: "Los Fuertes", street: "Av. Ejército de Oriente", numberS: 808, cost: 60 },
+            { suburb: "Xilotzingo", street: "Blvd. Valsequillo", numberS: 909, cost: 55 },
+            { suburb: "El Mirador", street: "Av. 11 Sur", numberS: 1001, cost: 45 },
+            { suburb: "Analco", street: "2 Oriente", numberS: 150, cost: 35 },
+            { suburb: "San Francisco", street: "4 Norte", numberS: 220, cost: 50 },
+            { suburb: "El Carmen", street: "3 Poniente", numberS: 315, cost: 45 },
+            { suburb: "Huexotitla", street: "31 Oriente", numberS: 412, cost: 60 },
+            { suburb: "La Margarita", street: "Calle Margaritas", numberS: 523, cost: 40 },
         ];
 
         for (const place of places) {
             await this.storeOrUpdatePlace(
-                place.entry,
-                place.exit,
                 place.suburb,
                 place.street,
                 place.numberS,
@@ -183,10 +181,10 @@ export class OrmAuthStore implements AuthStore {
     }
 
     //PLACES
-    async storeOrUpdatePlace(entry: string, exit: string, suburb: string, street: string, numberS: number, cost: number) {
+    async storeOrUpdatePlace(suburb: string, street: string, numberS: number, cost: number) {
         await Place.findOrCreate({
             where: { suburb, street, numberS }, // Condiciones para buscar un lugar
-            defaults: { entry, exit, suburb, street, numberS, cost }, // Valores para crear si no se encuentra
+            defaults: { suburb, street, numberS, cost }, // Valores para crear si no se encuentra
         });
     }
     async viewPlaces() {
@@ -195,7 +193,7 @@ export class OrmAuthStore implements AuthStore {
         return places;
     }
 
-    async updatePlace(id: number, entry: string, exit: string, cost: number) {
+    async updatePlace(id: number, cost: number) {
         try {
             // Busca el lugar por id
             const place = await Place.findByPk(id);
@@ -205,8 +203,6 @@ export class OrmAuthStore implements AuthStore {
 
             // Actualiza los campos necesarios
             await place.update({
-                entry,
-                exit,
                 cost
             });
 
@@ -219,7 +215,7 @@ export class OrmAuthStore implements AuthStore {
     }
 
     //BOOKINGS
-    async storeBookings(date: string, placeId: number, username: string) {
+    async storeBookings(date: string, placeId: number, username: string, bEntry: string, bExit: string) {
         try {
             const [booking, created] = await Booking.findOrCreate({
                 where: {
@@ -229,7 +225,9 @@ export class OrmAuthStore implements AuthStore {
                 defaults: {
                     userPk: username,     // Usuario (username de la tabla User)
                     date: date,           // Fecha de la reserva
-                    placePk: placeId,     // Lugar de la reserva
+                    placePk: placeId,
+                    bEntry: bEntry,
+                    bExit: bExit  // Lugar de la reserva
                 },
             });
 
@@ -261,12 +259,12 @@ export class OrmAuthStore implements AuthStore {
     async viewBookingsUser(username: string): Promise<Record<string, any>[]> {
         const bookings = await Booking.findAll({
             where: { userPk: username }, // Filtrar por el usuario
-            attributes: ['id', 'date'], // Incluye explícitamente el campo `id` del modelo Booking
+            attributes: ['id', 'date', 'bEntry', 'bExit'], // Campos del modelo Booking
             include: [
                 {
                     model: Place,
                     as: 'place',
-                    attributes: ['suburb', 'entry', 'exit'], // Campos específicos del modelo Place
+                    attributes: ['suburb', 'cost'], // Campos específicos del modelo Place
                 },
             ],
         });

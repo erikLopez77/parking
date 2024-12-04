@@ -1,7 +1,6 @@
 import {
     DataTypes, InferAttributes, InferCreationAttributes, Model,
     Sequelize, HasManySetAssociationsMixin,
-    DateOnlyDataType,
 } from "sequelize";
 import { user, Role, booking } from "./auth_types";
 export class User extends Model<InferAttributes<User>,
@@ -18,6 +17,10 @@ export class Booking extends Model<InferAttributes<Booking>,
     InferAttributes<Booking>> implements booking {
     declare id?: number;
     declare date: string;
+    declare bEntry: string;
+    declare bExit: string;//booking
+    declare rEntry?: string;//real
+    declare rExit?: string;
     declare userPk: string; // FK a User
     declare placePk: number; // FK a Place
 }
@@ -26,8 +29,6 @@ export class Place extends Model<InferAttributes<Place>,
     InferAttributes<Place>> {
     declare id?: number;
     //declare picture: Buffer;
-    declare entry: string;
-    declare exit: string;
     declare suburb: string;
     declare street: string;
     declare numberS: number;
@@ -61,6 +62,10 @@ export const initializeAuthModels = (sequelize: Sequelize) => {
     Booking.init({
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         date: { type: DataTypes.DATEONLY, allowNull: false },
+        bEntry: { type: DataTypes.TIME },
+        bExit: { type: DataTypes.TIME },//bookExit
+        rEntry: { type: DataTypes.TIME },
+        rExit: { type: DataTypes.TIME },//realExit
         userPk: { type: DataTypes.STRING, allowNull: false },
         placePk: { type: DataTypes.INTEGER, allowNull: false },
     }, {
@@ -69,8 +74,6 @@ export const initializeAuthModels = (sequelize: Sequelize) => {
     });
     Place.init({
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        entry: { type: DataTypes.TIME },
-        exit: { type: DataTypes.TIME },
         // picture: { type: DataTypes.BLOB },
         suburb: { type: DataTypes.STRING },
         street: { type: DataTypes.STRING },

@@ -187,7 +187,10 @@ export const registerFormRoutesUser = (app: Express) => {
             const { id } = req.params;
             const hoy = new Date().toISOString().split('T')[0]; // Obtener fecha actual en formato YYYY-MM-DD
             console.log(hoy);
-            res.render("reserve", { id, hoy });
+            const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0')); // ["00", "01", ..., "23"]
+            const minutes = ["00", "15", "30", "45"];
+
+            res.render("reserve", { id, hoy, hours, minutes });
         } else {
             res.render("unauthorized");
         }
@@ -195,13 +198,21 @@ export const registerFormRoutesUser = (app: Express) => {
     app.post("/reserve/:id", async (req, res) => {
         const { id } = req.params; // Recupera el parámetro id como cadena
         const numericId = parseInt(id, 10); // Convierte id a número base 10
+        const result = req.body; // Asegúrate de extraer la propiedad `fecha` del body
+        console.log(result);
+        var h = result.bEntryH;
+        var min = result.bEntryM;
+        const bEntry = h + ":" + min;
 
-        const fecha = req.body.date; // Asegúrate de extraer la propiedad `fecha` del body
+        var he = result.bExitH;
+        var mine = result.bExitM;
+        const bExit = he + ":" + mine;
         const username: string | undefined = req.session.user?.username; // Recupera el usuario de la sesión
-        console.log("fecha", fecha, "username", username, "id", id);
-        if (username) {
+        console.log("fecha", result.date, "username", username, "id", id, bEntry, bExit);
+        if (username && bEntry && result.date && bExit) {
             try {
-                const booking = await store.storeBookings(fecha, numericId, username);
+                const booking = await store.storeBookings(result.date, numericId, username, bEntry, bExit);
+                console.log(booking);
                 if (booking) {
                     res.status(201).send({ success: true, message: 'Reserva creada con éxito', booking });
                 } else {
@@ -224,7 +235,7 @@ export const registerFormRoutesUser = (app: Express) => {
                     return res.status(401).send({ success: false, message: "Usuario no autenticado" });
                 }
                 const bookingsR = await store.viewBookingsUser(username);
-                console.log(bookingsR);
+                console.log("bookings", bookingsR);
                 res.render("reservations", { bookingsR });
             } catch (error) {
                 console.error("Error al obtener las reservas:", error);
@@ -241,14 +252,14 @@ export const registerFormRoutesUser = (app: Express) => {
             try {
                 const { id } = req.params;
                 const numericId = parseInt(id, 10);
-                const { entry, exit, cost } = req.body;
+                const { cost } = req.body;
                 // Verifica que el lugar exista
                 const place = await Place.findByPk(numericId);
                 if (!place) {
                     return res.status(404).json({ success: false, message: "Lugar no encontrado." });
                 }
                 // Actualiza los datos del lugar
-                await place.update({ entry, exit, cost });
+                await place.update({ cost });
                 return res.status(200).json({ success: true, message: "Lugar actualizado exitosamente." });
             } catch (error) {
                 console.error("Error al actualizar el lugar:", error);
@@ -337,7 +348,7 @@ export const registerFormRoutesUser = (app: Express) => {
 
             console.log("Datos recibidos para actualizar:", { numericId, entry, exit, cost });
 
-            const place = await store.updatePlace(numericId, entry, exit, cost); // Actualiza el lugar
+            const place = await store.updatePlace(numericId, cost); // Actualiza el lugar
 
             if (!place) {
                 return res.status(404).json({ success: false, message: "Lugar no encontrado." });

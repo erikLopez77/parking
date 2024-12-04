@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Ya se ha apartado la fecha.Por favor, selecciona otra.',
+                        text: 'Ya se ha apartado la fecha. Por favor, selecciona otra.',
                         icon: 'error',
                         confirmButtonText: 'Aceptar',
                     })

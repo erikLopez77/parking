@@ -3,18 +3,59 @@
         <div class="card-header text-white" style="background-color: #03254c;">
             <h3 class="card-title mb-0 text-center">Reserva tu fecha</h3>
         </div>
-        <div class="card-body" style="background-color:white">
-            <h5 class="text-center mb-4" style="color: #1167b1;">Selecciona una fecha para reservar:</h5>
-            <form method="post" class="reserve" data-id="{{id}}" action="/reserve/{{id}}">
-                <div class="form-group mb-3">
-                    <label for="fecha" class="form-label" style="color: #03254c;">Fecha</label>
-                    <input type="date" name="date" class="form-control" min="{{hoy}}" value="{{date}}">
-                </div>
-                <button type="submit" class="btn text-white w-100" style="background-color: #1167b1;">
-                    Enviar
-                </button>
-            </form>
-        </div>
+        <form method="post" class="reserve" data-id="{{id}}" action="/reserve/{{id}}">
+            <h5 style="color: #03254c;">Seleccione la fecha, hora de entrada y hora de salida de su reserva</h5>
+
+            <!-- Selección de fecha -->
+            <div class="form-group mb-3">
+                <label for="fecha" class="form-label" style="color: #03254c;">Fecha</label>
+                <input type="date" name="date" class="form-control" min="{{hoy}}" value="{{date}}">
+            </div>
+
+            <!-- Selección de hora -->
+            <div class="form-group mb-3">
+                <label for="hour" class="form-label" style="color: #03254c;">Hora de entrada</label>
+                <select name="bEntryH" class="form-control">
+                    {{#each hours}}
+                    <option value="{{this}}">{{this}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <!-- Selección de minuto -->
+            <div class="form-group mb-3">
+                <label for="minute" class="form-label" style="color: #03254c;">Minuto de entrada</label>
+                <select name="bEntryM" class="form-control">
+                    {{#each minutes}}
+                    <option value="{{this}}">{{this}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <!-- Selección de hora -->
+            <div class="form-group mb-3">
+                <label for="hour" class="form-label" style="color: #03254c;">Hora de salida</label>
+                <select name="bExitH" class="form-control">
+                    {{#each hours}}
+                    <option value="{{this}}">{{this}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <!-- Selección de minuto -->
+            <div class="form-group mb-3">
+                <label for="minute" class="form-label" style="color: #03254c;">Minuto de salida</label>
+                <select name="bExitM" class="form-control">
+                    {{#each minutes}}
+                    <option value="{{this}}">{{this}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <button type="submit" class="btn text-white w-100" style="background-color: #1167b1;">
+                Enviar
+            </button>
+        </form>
     </div>
     <script type="module" src="/client.js"></script>
 </main>

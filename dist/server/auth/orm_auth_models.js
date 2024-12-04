@@ -31,6 +31,10 @@ const initializeAuthModels = (sequelize) => {
     Booking.init({
         id: { type: sequelize_1.DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         date: { type: sequelize_1.DataTypes.DATEONLY, allowNull: false },
+        bEntry: { type: sequelize_1.DataTypes.TIME },
+        bExit: { type: sequelize_1.DataTypes.TIME },
+        rEntry: { type: sequelize_1.DataTypes.TIME },
+        rExit: { type: sequelize_1.DataTypes.TIME },
         userPk: { type: sequelize_1.DataTypes.STRING, allowNull: false },
         placePk: { type: sequelize_1.DataTypes.INTEGER, allowNull: false },
     }, {
@@ -39,8 +43,6 @@ const initializeAuthModels = (sequelize) => {
     });
     Place.init({
         id: { type: sequelize_1.DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        entry: { type: sequelize_1.DataTypes.TIME },
-        exit: { type: sequelize_1.DataTypes.TIME },
         // picture: { type: DataTypes.BLOB },
         suburb: { type: sequelize_1.DataTypes.STRING },
         street: { type: sequelize_1.DataTypes.STRING },

@@ -28,9 +28,9 @@ export interface AuthStore {
     storeOrUpdateRole(role: Role): Promise<Role>;
     validateMembership(username: string, role: string): Promise<boolean>;
     viewPlaces(): Promise<Place[]>;
-    storeBookings(date: string, placeId: number, username: string): Promise<Booking | null>;
+    storeBookings(date: string, placeId: number, username: string, bEntry: string, bExit: string): Promise<Booking | null>;
     viewBookings(): Promise<booking[] | null>;
     viewBookingsUser(username: string): Promise<Record<string, any>[]>;
     deleteBooking(id: number): Promise<number>;
-    updatePlace(id: number, entry: string, exit: string, cost: number): Promise<Place>
+    updatePlace(id: number, cost: number): Promise<Place>
 }
