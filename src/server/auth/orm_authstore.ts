@@ -283,12 +283,79 @@ export class OrmAuthStore implements AuthStore {
             ...booking.get({ plain: true }), // Incluye los atributos planos de la reserva
         }));
     }
+    async updateBookingWithCurrentTime(bookingId: number): Promise<boolean> {
+        // Obtener la reserva
+        const booking = await Booking.findByPk(bookingId, {
+            attributes: ['bEntry', 'rEntry'],
+        });
+
+        if (!booking) {
+            throw new Error("Reserva no encontrada");
+            return false;
+        }
+
+        // Obtener la fecha actual y la fecha de la entrada planificada (bEntry)
+        const currentDate = new Date();
+        const bookingDate = new Date(booking.date);
+
+        // Asegurarse de que solo se compara la fecha, sin la hora
+        const isSameDay = currentDate.toDateString() === bookingDate.toDateString();
+        if (!isSameDay) {
+            throw new Error("La reserva no es para el día de hoy.");
+            return false;
+        }
+
+        // Comparar las horas de entrada (rEntry y bEntry) para ver si la diferencia es mayor a 10 minutos
+        const bEntryTime = new Date(booking.bEntry).getTime();
+        const currentTime = new Date().getTime();
+        const timeDifference = Math.abs(currentTime - bEntryTime); // Diferencia en milisegundos
+
+        // 10 minutos en milisegundos
+        const maxTimeDifference = 10 * 60 * 1000;
+
+        if (timeDifference > maxTimeDifference) {
+            throw new Error("No puedes actualizar la entrada con más de 10 minutos de diferencia.");
+            return false;
+        }
+
+        // Si pasa todas las validaciones, actualizamos rEntry con la hora actual
+        await Booking.update(
+            { rEntry: currentDate.toISOString() },
+            { where: { id: bookingId } }
+        );
+        return true;
+    }
 
     async deleteBooking(id: number): Promise<number> {
+        if (!id || isNaN(id)) {
+            throw new Error("ID inválido");
+        }
         const deletedRows = await Booking.destroy({
             where: { id }, // Elimina la reserva con el ID especificado
         });
         return deletedRows; // Retorna el número de filas eliminadas
     }
+
+    async getBooking(id: number): Promise<any> {
+        const booking = await Booking.findByPk(id, {
+            include: [
+                {
+                    model: Place,
+                    as: 'place', // Asegúrate de que tienes el modelo de Place correctamente relacionado
+                    attributes: ['suburb', 'street', 'cost', 'numberS'], // Ajusta los campos según tu esquema
+                },
+            ],
+        });
+
+        if (booking) {
+            const plainBooking = booking.get({ plain: true });
+            // Retornar la información que necesitas
+            return {
+                plainBooking         // Salida
+            };
+        }
+        throw new Error('Booking not found');
+    }
+
 
 }

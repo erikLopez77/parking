@@ -245,7 +245,34 @@ export const registerFormRoutesUser = (app: Express) => {
             res.render("unauthorized");
         }
     });
+
     app.post("/reservations/:id", async (req, res) => {
+        const boolUser = req.session.user?.role;
+        const authtenticated = req.authenticated;
+        const { id } = req.params; // Recupera el ID de los parámetros de la ruta
+        if (boolUser && authtenticated) {
+            try {
+                const numericId = parseInt(id, 10); // Convierte a número
+                if (isNaN(numericId)) {
+                    return res.status(400).json({ success: false, message: "ID inválido" });
+                }
+
+                const deletedRows = await store.deleteBooking(numericId);
+                if (deletedRows > 0) {
+                    return res.status(200).json({ success: true, message: "Reserva cancelada con éxito." });
+                } else {
+                    return res.status(404).json({ success: false, message: "Reserva no encontrada." });
+                }
+            } catch (error) {
+                console.error("Error al cancelar la reserva:", error);
+                return res.status(500).json({ success: false, message: "Error interno del servidor" });
+            }
+        } else {
+            res.status(403).json({ success: false, message: "No autorizado." });
+        }
+    });
+
+    app.post("/booking/:id", async (req, res) => {
         const boolUser = req.session.user?.role;
         const authtenticated = req.authenticated;
         if (boolUser && authtenticated) {
@@ -269,6 +296,44 @@ export const registerFormRoutesUser = (app: Express) => {
     app.get("/unauthorized", async (req, resp) => {
         resp.render("unauthorized");
     });
+    app.get("/entry/:id", async (req, res) => {
+        const isUser = req.session.user?.role;
+        const authenticated = req.authenticated;
+        if (authenticated && isUser) {
+            const { id } = req.params;
+            const numericId = parseInt(id, 10);
+            const { plainBooking } = await store.getBooking(numericId); // Extrae plainBooking
+            console.log("Datos obtenidos: ", plainBooking);
+            res.render("entry", { booking: plainBooking }); // Envia el objeto plano
+        } else {
+            res.render("unauthorized");
+        }
+    });
+
+
+    app.post("/entry/:id", async (req, res) => {
+        const { id } = req.params;
+        const numericId = parseInt(id, 10);
+        const isUser = req.session.user?.role;
+        const authtenticated = req.authenticated;
+        const booking: Booking | null = await Booking.findByPk(numericId, {
+            attributes: ['date'],
+        });
+        /*  if (booking) {
+             const plainBooking = booking.get({ plain: true });
+             const bookingDate = new Date(plainBooking);
+             const isSameDay = currentDate.toDateString() === bookingDate.toDateString();
+         }
+ 
+         // Asegurarse de que solo se compara la fecha, sin la hora
+         if (authtenticated && isUser && isSameDay) {
+             const booking = store.updateBookingWithCurrentTime(numericId);
+             res.render("entry");
+         } else {
+             res.render("unauthorized");
+         } */
+    });
+
 
     app.get('/logout', (req, res) => {
         req.session.destroy(err => {

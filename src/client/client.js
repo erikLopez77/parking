@@ -142,9 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    //borrar booking
+    //borrar booking REVISAAAAAAR
     // Selecciona todos los formularios de eliminación
-    const forms = document.querySelectorAll(".delete");
+    const forms = document.querySelectorAll(".deleteP");
 
     if (forms) {
         forms.forEach(form => {
@@ -183,6 +183,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 icon: 'success',
                                 confirmButtonColor: '#3085d6',
                                 confirmButtonText: 'Aceptar'
+                            }).then(() => {
+                                // Redirige después de que el usuario cierre la alerta.
+                                window.location.href = "/reservations";
                             });
                             form.parentNode.removeChild(form); // Remueve la reserva del DOM
                         } else {
@@ -260,6 +263,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     confirmButtonText: 'Aceptar',
                 });
             }
+        });
+    }
+
+    const entry = document.querySelector('.res-form');
+    if (entry) {
+        entry.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evita el comportamiento por defecto del formulario.
+
+            const placeId = entry.getAttribute('data-id'); // Obtén el ID desde el atributo data-id
+            const form = new FormData(entry);
+            const data = Object.fromEntries(form.entries()); // Convierte los datos del formulario en un objeto
+
+            const response = await fetch(`/entry/${placeId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
         });
     }
 });
