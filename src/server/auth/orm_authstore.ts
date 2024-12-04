@@ -214,8 +214,8 @@ export class OrmAuthStore implements AuthStore {
         }
     }
 
-    //BOOKINGS
-    async storeBookings(date: string, placeId: number, username: string, bEntry: string, bExit: string) {
+    //BOOKINGS mio no toma en cuenta la hora
+    /* async storeBookings(date: string, placeId: number, username: string, bEntry: string, bExit: string) {
         try {
             const [booking, created] = await Booking.findOrCreate({
                 where: {
@@ -242,7 +242,45 @@ export class OrmAuthStore implements AuthStore {
             console.error('Error al crear la reserva:', error);
             throw error;
         }
+    } */
+
+    async storeBookings(date: string, placeId: number, username: string, bEntry: string, bExit: string) {
+        try {
+            const overlappingBooking = await Booking.findOne({
+                where: {
+                    date: date,
+                    placePk: placeId,
+                    [Op.or]: [
+                        {
+                            bEntry: { [Op.lt]: bExit },
+                            bExit: { [Op.gt]: bEntry }
+                        },
+                    ]
+                }
+            });
+
+            if (overlappingBooking) {
+                console.log(`Ya existe una reserva para este lugar en el horario solicitado.`);
+                return null;
+            }
+
+            const booking = await Booking.create({
+                userPk: username,
+                date: date,
+                placePk: placeId,
+                bEntry: bEntry,
+                bExit: bExit,
+            });
+
+            console.log(`Reserva creada exitosamente para el usuario ${username} en el lugar ${placeId} en la fecha ${date}.`);
+            return booking;
+        } catch (error) {
+            console.error('Error al crear la reserva:', error);
+            throw error;
+        }
     }
+
+
     async viewBookings(): Promise<Record<string, any>[]> {
         const bookings = await Booking.findAll({
             include: [

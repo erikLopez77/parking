@@ -31,6 +31,7 @@ export function isAuthenticated(req: any, res: any, next: any) {
     res.redirect('/login'); // Si no está autenticado, lo rediriges al login
 }
 
+
 // Ejemplo de uso
 /* app.get('/admin', authorize('admin'), (req, res) => {
     res.send('Panel de administración');

@@ -197,30 +197,62 @@ class OrmAuthStore {
             throw error;
         }
     }
-    //BOOKINGS
-    async storeBookings(date, placeId, username, bEntry, bExit) {
+    //BOOKINGS mio no toma en cuenta la hora
+    /* async storeBookings(date: string, placeId: number, username: string, bEntry: string, bExit: string) {
         try {
-            const [booking, created] = await orm_auth_models_1.Booking.findOrCreate({
+            const [booking, created] = await Booking.findOrCreate({
                 where: {
-                    date: date,
-                    placePk: placeId, // Id del lugar
+                    date: date,           // Fecha de la reserva
+                    placePk: placeId,     // Id del lugar
                 },
                 defaults: {
-                    userPk: username,
-                    date: date,
+                    userPk: username,     // Usuario (username de la tabla User)
+                    date: date,           // Fecha de la reserva
                     placePk: placeId,
                     bEntry: bEntry,
-                    bExit: bExit // Lugar de la reserva
+                    bExit: bExit  // Lugar de la reserva
                 },
             });
+
             if (created) {
                 console.log(`Reserva creada exitosamente para el usuario ${username} en el lugar ${placeId} en la fecha ${date}.`);
                 return booking; // Devuelve la reserva creada
-            }
-            else {
+            } else {
                 console.log(`Ya existe una reserva para esta fecha y lugar.`);
                 return null; // No se crea, ya existía
             }
+        } catch (error) {
+            console.error('Error al crear la reserva:', error);
+            throw error;
+        }
+    } */
+    async storeBookings(date, placeId, username, bEntry, bExit) {
+        try {
+            const overlappingBooking = await orm_auth_models_1.Booking.findOne({
+                where: {
+                    date: date,
+                    placePk: placeId,
+                    [sequelize_1.Op.or]: [
+                        {
+                            bEntry: { [sequelize_1.Op.lt]: bExit },
+                            bExit: { [sequelize_1.Op.gt]: bEntry }
+                        },
+                    ]
+                }
+            });
+            if (overlappingBooking) {
+                console.log(`Ya existe una reserva para este lugar en el horario solicitado.`);
+                return null;
+            }
+            const booking = await orm_auth_models_1.Booking.create({
+                userPk: username,
+                date: date,
+                placePk: placeId,
+                bEntry: bEntry,
+                bExit: bExit,
+            });
+            console.log(`Reserva creada exitosamente para el usuario ${username} en el lugar ${placeId} en la fecha ${date}.`);
+            return booking;
         }
         catch (error) {
             console.error('Error al crear la reserva:', error);
