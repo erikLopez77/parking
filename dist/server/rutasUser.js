@@ -225,25 +225,22 @@ const registerFormRoutesUser = (app) => {
             res.render("unauthorized");
         }
     });
-    app.delete("/cancel-reservation/:id", async (req, res) => {
+    app.post("/reservations/:id", async (req, res) => {
         const boolUser = req.session.user?.role;
         const authtenticated = req.authenticated;
         if (boolUser && authtenticated) {
             try {
                 const { id } = req.params;
                 const numericId = parseInt(id, 10);
-                const { cost } = req.body;
-                // Verifica que el lugar exista
-                const place = await orm_auth_models_1.Place.findByPk(numericId);
-                if (!place) {
-                    return res.status(404).json({ success: false, message: "Lugar no encontrado." });
+                const rows = await store.deleteBooking(numericId);
+                console.log(rows);
+                if (rows > 0) {
+                    return res.status(404).json({ success: true, message: "Se borró reserva. " });
                 }
-                // Actualiza los datos del lugar
-                await place.update({ cost });
-                return res.status(200).json({ success: true, message: "Lugar actualizado exitosamente." });
+                return res.status(200).json({ success: false, message: "No se logró borrar la reserva. " });
             }
             catch (error) {
-                console.error("Error al actualizar el lugar:", error);
+                console.error("Error al tratar de eliminar reserva:", error);
                 return res.status(500).json({ success: false, message: "Ocurrió un error en el servidor." });
             }
         }

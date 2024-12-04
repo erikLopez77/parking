@@ -143,32 +143,74 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     //borrar booking
-    const buttonsD = document.querySelectorAll(".delete"); // Cambié `querySelector` por `querySelectorAll` para seleccionar múltiples botones
+    // Selecciona todos los formularios de eliminación
+    const forms = document.querySelectorAll(".delete");
 
-    if (buttonsD) {
-        buttonsD.forEach(button => {
-            button.addEventListener('click', async () => {
-                const placeId = button.getAttribute('data-id'); // Obtiene el ID de la reserva
-                if (confirm("¿Estás seguro de que deseas cancelar esta reserva?")) {
-                    fetch(`/cancel-reservation/${placeId}`, {
-                        method: 'DELETE',
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                alert("Reserva cancelada con éxito.");
-                                window.location.reload(); // Recargar la página para actualizar la lista
-                            } else {
-                                alert("Hubo un problema al cancelar la reserva.");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error al cancelar la reserva:", error);
-                            alert("Ocurrió un error al procesar la solicitud.");
+    if (forms) {
+        forms.forEach(form => {
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Evita el comportamiento predeterminado del formulario
+
+                const button = form.querySelector('button');
+                const placeId = form.getAttribute('data-id'); // Extrae el ID desde el atributo
+
+                const confirmation = await Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "Esta acción cancelará la reserva.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, cancelar',
+                    cancelButtonText: 'No, mantener'
+                });
+
+                if (confirmation.isConfirmed) {
+                    try {
+                        const response = await fetch(`/reservations/${placeId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
                         });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            await Swal.fire({
+                                title: '¡Éxito!',
+                                text: data.message || "Reserva cancelada con éxito.",
+                                icon: 'success',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'Aceptar'
+                            });
+                            form.parentNode.removeChild(form); // Remueve la reserva del DOM
+                        } else {
+                            await Swal.fire({
+                                title: 'Error',
+                                text: data.message || "No se logró cancelar la reserva.",
+                                icon: 'error',
+                                confirmButtonColor: '#d33',
+                                confirmButtonText: 'Aceptar'
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error al cancelar la reserva:", error);
+                        await Swal.fire({
+                            title: 'Error',
+                            text: "Ocurrió un error al procesar la solicitud.",
+                            icon: 'error',
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
                 }
             });
         });
-    }//updateFormplace
+    }
+
+
+    //updateFormplace
     const updatePlace = document.querySelector('#updatePlace');
     if (updatePlace) {
         updatePlace.addEventListener('submit', async (e) => {
