@@ -122,6 +122,18 @@ export class OrmAuthStore implements AuthStore {
             })
         })
     }
+    async deleteUser(username: string): Promise<boolean> {
+        try {
+            const eliminado = await User.destroy({
+                where: { username: username },
+            });
+            return eliminado > 0; // Retorna `true` si se eliminó al menos un registro, de lo contrario `false`.
+        } catch (error) {
+            console.error("Error al eliminar el usuario:", error);
+            return false; // Devuelve `false` en caso de error.
+        }
+    }
+
     async isUser(username: string): Promise<boolean> {
         const roles = await this.getRolesForUser(username);
         console.log(roles);

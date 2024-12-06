@@ -46,6 +46,74 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    //p vista Save User
+    const formDelete = document.querySelector('#deleteUser');
+    if (formDelete) {
+        formDelete.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evita el comportamiento por defecto del formulario.
+
+            // Mostrar cuadro de confirmación
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción eliminará tu perfil y no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    // Si el usuario confirma, procede con la eliminación
+                    const placeId = formDelete.getAttribute('data-username');
+                    try {
+                        const response = await fetch(`/deleteProfile/${placeId}`, {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' },
+                        });
+
+                        const message = await response.json();
+                        if (message.success) {
+                            Swal.fire({
+                                title: '¡Eliminado!',
+                                text: 'Tu perfil ha sido eliminado.',
+                                icon: 'success',
+                                confirmButtonText: 'Aceptar',
+                            }).then(() => {
+                                // Redirige después de la confirmación
+                                window.location.href = "/logout";
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'No se pudo eliminar tu perfil. Inténtalo más tarde.',
+                                icon: 'error',
+                                confirmButtonText: 'Aceptar',
+                            });
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        Swal.fire({
+                            title: 'Error inesperado',
+                            text: 'Hubo un problema en el servidor. Por favor, inténtalo más tarde.',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar',
+                        });
+                    }
+                } else {
+                    // Si el usuario cancela, no pasa nada.
+                    Swal.fire({
+                        title: 'Cancelado',
+                        text: 'Tu perfil no ha sido eliminado.',
+                        icon: 'info',
+                        confirmButtonText: 'Aceptar',
+                    });
+                }
+            });
+        });
+    }
+
+
     //actualizar usuario
     const formUpdate = document.querySelector('#updateProfile');
     if (formUpdate) { // Solo añade el evento si el formulario existe

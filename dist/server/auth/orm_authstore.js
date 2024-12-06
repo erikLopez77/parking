@@ -111,6 +111,18 @@ class OrmAuthStore {
             });
         });
     }
+    async deleteUser(username) {
+        try {
+            const eliminado = await orm_auth_models_1.User.destroy({
+                where: { username: username },
+            });
+            return eliminado > 0; // Retorna `true` si se eliminó al menos un registro, de lo contrario `false`.
+        }
+        catch (error) {
+            console.error("Error al eliminar el usuario:", error);
+            return false; // Devuelve `false` en caso de error.
+        }
+    }
     async isUser(username) {
         const roles = await this.getRolesForUser(username);
         console.log(roles);

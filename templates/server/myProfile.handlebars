@@ -24,9 +24,16 @@
                 </div>
                 <button type="submit" class="btn btn-primary w-100"
                     style="background-color: #1167b1; border-color: #1167b1;">
-                    Actualizar datos
+                    Actualizar perfil
                 </button>
             </form>
+            <div style="mt-7">
+                <form method="post" id="deleteUser" src="/deleteUser" data-username="{{user.username}}">
+                    <button class="btn btn-primary w-100"
+                        style="background-color: #1167b1; border-color: #1167b1;  margin-top: 1px;">Eliminar
+                        perfil</button>
+                </form>
+            </div>
         </div>
     </div>
 </main>

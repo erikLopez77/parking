@@ -44,6 +44,32 @@ export const registerFormRoutesUser = (app: Express) => {
     app.get("/politics", (req, res) => {
         res.render("politics");
     });
+    app.delete("/deleteProfile/:username", async (req, res) => {
+        const name = req.params.username;
+        try {
+            const resultado = await store.deleteUser(name);
+            if (resultado) {
+                console.log("Usuario eliminado exitosamente.");
+                res.status(200).json({
+                    success: true,
+                    redirect: "/logout", // Indica al cliente a dónde redirigir
+                });
+            } else {
+                console.log("No se pudo eliminar al usuario.");
+                res.status(400).json({
+                    success: false,
+                    message: "No se pudo eliminar al usuario. Por favor, revisa los datos.",
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                success: false,
+                message: "Error inesperado en el servidor. Por favor, inténtalo más tarde.",
+            });
+        }
+    });
+
 
     app.get("/loggin", (req, res) => {
         const data = {
@@ -333,7 +359,6 @@ export const registerFormRoutesUser = (app: Express) => {
              res.render("unauthorized");
          } */
     });
-
 
     app.get('/logout', (req, res) => {
         req.session.destroy(err => {

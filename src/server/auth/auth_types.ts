@@ -35,4 +35,5 @@ export interface AuthStore {
     updatePlace(id: number, cost: number): Promise<Place>;
     updateBookingWithCurrentTime(bookingId: number): Promise<boolean>;
     getBooking(id: number): Promise<any>;
+    deleteUser(username: string): Promise<boolean>;
 }
