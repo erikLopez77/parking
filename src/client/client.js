@@ -334,19 +334,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const entry = document.querySelector('.res-form');
-    if (entry) {
-        entry.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Evita el comportamiento por defecto del formulario.
+    document.querySelectorAll('.res-form').forEach(form => {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); // Evita el comportamiento predeterminado del formulario
+            const placeId = form.getAttribute('data-id'); // Obtén el ID
+            if (placeId) {
 
-            const placeId = entry.getAttribute('data-id'); // Obtén el ID desde el atributo data-id
-            const form = new FormData(entry);
-            const data = Object.fromEntries(form.entries()); // Convierte los datos del formulario en un objeto
-
-            const response = await fetch(`/entry/${placeId}`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-            });
+                window.location.href = `/entry/${placeId}`; // Redirige al usuario
+            }
         });
-    }
+    });
+
+
 });

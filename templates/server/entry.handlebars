@@ -8,18 +8,20 @@
         <div
             style="padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #ecf0f1; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
             <div style="margin-bottom: 20px;">
-                <p style="font-size: 18px; margin: 0; color: #2c3e50;"><strong>ID:</strong> {{id}}</p>
-                <p style="font-size: 16px; margin: 5px 0; color: #7f8c8d;"><strong>Fecha:</strong> {{date}}</p>
-                <p style="font-size: 16px; margin: 5px 0;"><strong>Colonia:</strong> {{place.suburb}}</p>
-                <p style="font-size: 16px; margin: 5px 0;"><strong>Calle:</strong> {{place.street}}</p>
-                <p style="font-size: 16px; margin: 5px 0;"><strong>Número:</strong> {{place.numberS}}</p>
-                <p style="font-size: 16px; margin: 5px 0;"><strong>Costo:</strong> ${{place.cost}}</p>
-                <p style="font-size: 16px; margin: 5px 0;"><strong>Entrada:</strong> {{bEntry}}</p>
-                <p style="font-size: 16px; margin: 5px 0;"><strong>Salida:</strong> {{bExit}}</p>
+                <p style="font-size: 18px; margin: 0; color: #2c3e50;"><strong>ID:</strong> {{plainBooking.id}}</p>
+                <p style="font-size: 16px; margin: 5px 0; color: #7f8c8d;"><strong>Fecha:</strong> {{plainBooking.date}}
+                </p>
+                <p style="font-size: 16px; margin: 5px 0;"><strong>Colonia:</strong> {{plainBooking.place.suburb}}</p>
+                <p style="font-size: 16px; margin: 5px 0;"><strong>Calle:</strong> {{plainBooking.place.street}}</p>
+                <p style="font-size: 16px; margin: 5px 0;"><strong>Número:</strong> {{plainBooking.place.numberS}}</p>
+                <p style="font-size: 16px; margin: 5px 0;"><strong>Costo por hora:</strong> ${{plainBooking.place.cost}}
+                </p>
+                <p style="font-size: 16px; margin: 5px 0;"><strong>Entrada:</strong> {{plainBooking.bEntry}}</p>
+                <p style="font-size: 16px; margin: 5px 0;"><strong>Salida:</strong> {{plainBooking.bExit}}</p>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 15px;">
-                <form action="/entry/{{id}}" method="post" style="margin: 0;">
+                <form action="/entry/{{plainBooking.id}}" method="post" style="margin: 0;">
                     <button class="delete"
                         style="background-color: #e74c3c; color: #fff; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; font-size: 14px;">
                         Marcar entrada

@@ -328,13 +328,33 @@ export const registerFormRoutesUser = (app: Express) => {
         if (authenticated && isUser) {
             const { id } = req.params;
             const numericId = parseInt(id, 10);
-            const { plainBooking } = await store.getBooking(numericId); // Extrae plainBooking
-            console.log("Datos obtenidos: ", plainBooking);
-            res.render("entry", { booking: plainBooking }); // Envia el objeto plano
+            try {
+                const plainBooking = await store.getBooking(numericId); // Obtén los datos
+                if (plainBooking) {
+                    console.log("Datos obtenidos: ", plainBooking);
+                    res.render("entry", { plainBooking }); // Envíalos a la vista
+                    /* res.render('entry', {
+                        plainBooking: {
+                            id: 1,
+                            date: '2024-12-19',
+                            place: { suburb: 'La Paz', street: 'Avenida Juárez', cost: 60, numberS: 202 },
+                            bEntry: '12:00',
+                            bExit: '14:00',
+                        }
+                    }); */
+
+                } else {
+                    res.status(404).render("not-found", { message: "Reserva no encontrada." });
+                }
+            } catch (error) {
+                console.error("Error al obtener la reserva:", error);
+                res.status(500).render("error", { message: "Error al procesar tu solicitud." });
+            }
         } else {
-            res.render("unauthorized");
+            res.status(403).render("unauthorized");
         }
     });
+
 
 
     app.post("/entry/:id", async (req, res) => {

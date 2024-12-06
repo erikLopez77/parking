@@ -362,9 +362,8 @@ export class OrmAuthStore implements AuthStore {
         if (booking) {
             const plainBooking = booking.get({ plain: true });
             // Retornar la información que necesitas
-            return {
-                plainBooking         // Salida
-            };
+            return plainBooking;
+            // Salida
         }
         throw new Error('Booking not found');
     }
